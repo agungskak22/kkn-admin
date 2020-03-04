@@ -60,7 +60,7 @@
         id: 1,
         icon: 'mdi-view-dashboard',
         text: 'Dashboard',
-        to: 'home'
+        to: 'DashboardMaps'
       },
       {
         id: 2,
