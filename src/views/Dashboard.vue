@@ -10,27 +10,33 @@
         <v-list-item link>
           <v-img width="170" src="../assets/header-logo.svg"></v-img>
         </v-list-item>
-        <div style="margin-top:30px">
-            <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-contact-mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        </div>
+      </v-list>
+      <v-list dense>
+        <template v-for="(item, i) in items">
+          <v-row v-if="item.heading" :key="i" align="center">
+            <v-col cols="6">
+              <v-subheader v-if="item.heading">{{ item.heading }}</v-subheader>
+            </v-col>
+            <v-col cols="6" class="text-right">
+              <v-btn small text>edit</v-btn>
+            </v-col>
+          </v-row>
+
+          <v-divider v-else-if="item.divider" :key="i" dark class="my-4" />
+          <v-list-item v-else :key="i" @click="$router.push({ name: item.to }).catch(err => {})" link>
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ item.text }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
-
+    <v-container>
+      <router-view></router-view>
+    </v-container>
     <v-app-bar
       app
       color="#FFFF"
@@ -42,12 +48,33 @@
 </template>
 
 <script>
+// import store from '../store'
   export default {
     props: {
       source: String,
     },
     data: () => ({
       drawer: null,
+      items: [
+      {
+        id: 1,
+        icon: 'mdi-view-dashboard',
+        text: 'Dashboard',
+        to: 'home'
+      },
+      {
+        id: 2,
+        icon: 'mdi-account-multiple-outline',
+        text: 'Pengelolaan Pengguna',
+        to: 'users'
+      },
+      {
+        id: 3,
+        icon: 'mdi-azure',
+        text: 'Pengelolaan rumah',
+        to: 'building'
+      }
+    ]
     }),
   }
 </script>

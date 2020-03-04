@@ -13,8 +13,20 @@ const routes = [
     children: [
       {
         path: '/',
-        name: 'home',
-        component: () => import('../views/About.vue'),
+        name: 'DashboardMaps',
+        component: () => import('../views/DashboardMaps.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'users',
+        name: 'users',
+        component: () => import('../views/User.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'Building',
+        name: 'building',
+        component: () => import('../views/Building.vue'),
         meta: { requiresAuth: true }
       }
     ]
@@ -25,9 +37,9 @@ const routes = [
     component: Home
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/About.vue')
+    path: '/DashboardMaps',
+    name: 'DashboardMaps',
+    component: () => import('../views/DashboardMaps.vue')
   }
 ]
 
