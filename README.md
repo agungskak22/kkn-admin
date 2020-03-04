@@ -1,4 +1,4 @@
-# belajar_rest
+# KKN Atma Jaya Yogyakarta Repo
 
 ## Project setup
 ```
