@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire">
+  <div id="inspire">
     <v-navigation-drawer
       v-model="drawer"
       app
@@ -34,9 +34,6 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-container>
-      <router-view></router-view>
-    </v-container>
     <v-app-bar
       app
       color="#FFFF"
@@ -44,7 +41,10 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
     </v-app-bar>
-  </v-app>
+     <VContent>
+        <router-view />
+    </VContent>
+  </div>
 </template>
 
 <script>
@@ -60,19 +60,19 @@
         id: 1,
         icon: 'mdi-view-dashboard',
         text: 'Dashboard',
-        to: 'DashboardMaps'
+        to: 'home'
       },
       {
         id: 2,
         icon: 'mdi-account-multiple-outline',
         text: 'Pengelolaan Pengguna',
-        to: 'users'
+        to: 'user'
       },
       {
         id: 3,
-        icon: 'mdi-azure',
-        text: 'Pengelolaan rumah',
-        to: 'building'
+        icon: 'mdi-google-maps',
+        text: 'Maps',
+        to: 'map'
       }
     ]
     }),

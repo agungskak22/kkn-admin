@@ -1,46 +1,65 @@
 import Vue from 'vue'
 import store from '../store'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+
+function loadView(view) {
+  return () => import(/* webpackChunkName: "view-[request]" */ `../views/${view}.vue`)
+}
+
+function loadDashboardView(view) {
+  return () => import(/* webpackChunkName: "view-[request]" */ `../views/dashboard/${view}.vue`)
+}
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/dashboard',
-    component: () => import('../views/Dashboard.vue'),
-    name: 'dashboard',
+    component: loadView('Dashboard'),
     children: [
       {
         path: '/',
-        name: 'DashboardMaps',
-        component: () => import('../views/DashboardMaps.vue'),
+        name: 'home',
+        component: loadDashboardView('Main'),
         meta: { requiresAuth: true }
       },
       {
-        path: 'users',
-        name: 'users',
-        component: () => import('../views/User.vue'),
+        path: 'owner/:id',
+        name: 'ownerDetail',
+        component: loadDashboardView('Detail'),
         meta: { requiresAuth: true }
       },
       {
-        path: 'Building',
-        name: 'building',
-        component: () => import('../views/Building.vue'),
+        path: 'user',
+        name: 'user',
+        component: loadDashboardView('User'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'map',
+        name: 'map',
+        component: loadDashboardView('Maps'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'house/:id/:house',
+        name: 'houseDetail',
+        component: loadDashboardView('Housedetail'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'house',
+        name: 'newHouse',
+        component: loadDashboardView('Formhouse'),
         meta: { requiresAuth: true }
       }
     ]
   },
   {
     path: '/',
-    name: 'HomeLogin',
-    component: Home
+    name: 'login',
+    component: loadView('Login')
   },
-  {
-    path: '/DashboardMaps',
-    name: 'DashboardMaps',
-    component: () => import('../views/DashboardMaps.vue')
-  }
 ]
 
 const router = new VueRouter({
