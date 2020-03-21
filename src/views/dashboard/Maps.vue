@@ -100,7 +100,7 @@
         </v-card-text>
         <v-divider class="mb-1"></v-divider>
         <v-card-actions class="mb-1">
-          <v-btn block elevation="0" color="blue darken-1" dark  @click="dialog = false">Apply</v-btn>
+          <v-btn block elevation="0" color="blue darken-1" dark  @click="$router.push({ name : 'logistic'})">Apply</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
