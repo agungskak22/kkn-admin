@@ -4,7 +4,7 @@
         <v-card style="box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
             <v-card style="border: 0.5px solid #E0E0E0;box-sizing: border-box;border-radius: 4px;margin:16px">
               <v-layout row wrap style="margin:10px">
-              <v-flex xs8>
+              <v-flex xs12 md5>
                <v-text-field
                     v-model="keyword"
                     outlined
@@ -15,7 +15,7 @@
                     style="padding:4px"
                 ></v-text-field>
               </v-flex>
-              <v-flex xs4 class="text-right">
+              <v-flex xs12 md4 class="text-right">
                 <v-select
                   v-model="filterDisaster"
                   :items="items"
@@ -25,6 +25,18 @@
                   outlined
                 ></v-select>
               </v-flex>
+              <v-flex xs12 md3 class="pa-1">
+                <v-btn
+                    depressed
+                    style="float:right"
+                    dark
+                    color = "#007EFF"
+                    height="56"
+                    @click="dialog = true"
+                    >
+                    Generate Logistic
+                </v-btn> 
+          </v-flex>
             </v-layout>
             </v-card>
             <div class="card-body-parent" style="margin:16px">
@@ -45,6 +57,53 @@
             </div>
         </v-card>
     </div>
+    <v-dialog v-model="dialog" scrollable max-width="350px">
+      <v-card>
+        <v-card-title>Pilih Status Kebencanaan</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text style="height: 300px;">
+            <v-container fluid>
+        <v-row class="mt-0">
+          <v-col cols="12" sm="12" md="12">
+            <v-checkbox
+              v-model="selected"
+              label="Rendah"
+              color="primary"
+              value="Rendah"
+              hide-details
+            ></v-checkbox>
+            <v-checkbox
+              v-model="selected"
+              label="Sedang"
+              color="primary"
+              value="sedang"
+              hide-details
+            ></v-checkbox>
+            <v-checkbox
+              v-model="selected"
+              label="Tinggi"
+              color="primary"
+              value="Tinggi"
+              hide-details
+            ></v-checkbox>
+          <v-divider class="mt-4"></v-divider>
+            <v-checkbox
+              v-model="selected"
+              label="Pilih Semua"
+              color="success"
+              value="semua"
+              hide-details
+            ></v-checkbox>
+          </v-col>
+        </v-row>
+      </v-container>
+        </v-card-text>
+        <v-divider class="mb-1"></v-divider>
+        <v-card-actions class="mb-1">
+          <v-btn block elevation="0" color="blue darken-1" dark  @click="dialog = false">Apply</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -52,6 +111,8 @@
 export default {
   data () {
     return {
+        selected:[],
+        dialog: false,
         owner:{},
         keyword:"",
         ownerId: null,

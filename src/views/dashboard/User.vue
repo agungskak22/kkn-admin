@@ -4,7 +4,7 @@
       <div style="padding:20px">
         <h2 class="text-md-center">Data Pengguna</h2>
         <v-layout row wrap style="margin:10px">
-          <v-flex xs6>
+          <v-flex xs12 md9>
             <v-text-field
                 v-model="keyword"
                 outlined
@@ -14,14 +14,12 @@
                 color="#E4E4E4"
             ></v-text-field>
           </v-flex>
-          <v-flex xs6 class="text-right">
+          <v-flex xs12 md3 class="text-right">
               <v-btn
               depressed
               dark
               color = "#007EFF"
-              class="btn-style"
-              style="width: 200px;
-  height: 48px;"
+              height="56"
               @click="reset(),dialog = true"
               >
                   Tambah Pengguna

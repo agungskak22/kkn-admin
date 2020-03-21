@@ -73,7 +73,7 @@
         icon: 'mdi-google-maps',
         text: 'Maps',
         to: 'map'
-      }
+      },
     ]
     }),
   }

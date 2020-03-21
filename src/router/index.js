@@ -52,6 +52,12 @@ const routes = [
         name: 'newHouse',
         component: loadDashboardView('Formhouse'),
         meta: { requiresAuth: true }
+      },
+      {
+        path: 'logistic',
+        name: 'logistic',
+        component: loadDashboardView('Logistic'),
+        meta: { requiresAuth: true }
       }
     ]
   },
