@@ -55,52 +55,67 @@
                             hide-default-footer
                             :headers="detailPengadaan"
                             :items="pangan"
-                            :items-per-page="5"
+                            :items-per-page="20"
                             class="elevation-1"
                         ></v-data-table>
                         </div>
                     </v-card>
                     <v-card style="margin:10px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
                         <div class="card-header">
-                            <h2 style="margin-left:16px">Bantuan Pangan</h2>
+                            <h2 style="margin-left:16px">Bantuan Sandang</h2>
                         </div>
                         <v-divider></v-divider>
                         <div class="card-body">
                             <v-data-table
                             hide-default-footer
-                            :headers="detailPengadaan"
-                            :items="pangan"
-                            :items-per-page="5"
+                            :headers="detailSandang"
+                            :items="sandang"
+                            :items-per-page="20"
                             class="elevation-1"
                         ></v-data-table>
                         </div>
                     </v-card>
                     <v-card style="margin:10px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
                         <div class="card-header">
-                            <h2 style="margin-left:16px">Bantuan Pangan</h2>
+                            <h2 style="margin-left:16px">Pakaian Ibadah</h2>
                         </div>
                         <v-divider></v-divider>
                         <div class="card-body">
                             <v-data-table
                             hide-default-footer
-                            :headers="detailPengadaan"
-                            :items="pangan"
-                            :items-per-page="5"
+                            :headers="pakaianIbadah"
+                            :items="itemIbadah"
+                            :items-per-page="20"
                             class="elevation-1"
                         ></v-data-table>
                         </div>
                     </v-card>
                     <v-card style="margin:10px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
                         <div class="card-header">
-                            <h2 style="margin-left:16px">Bantuan Pangan</h2>
+                            <h2 style="margin-left:16px">Kebutuhan Sandang Lain</h2>
                         </div>
                         <v-divider></v-divider>
                         <div class="card-body">
                             <v-data-table
                             hide-default-footer
-                            :headers="detailPengadaan"
-                            :items="pangan"
-                            :items-per-page="5"
+                            :headers="sandangLain"
+                            :items="itemSandangLain"
+                            :items-per-page="20"
+                            class="elevation-1"
+                        ></v-data-table>
+                        </div>
+                    </v-card>
+                    <v-card style="margin:10px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
+                        <div class="card-header">
+                            <h2 style="margin-left:16px">Bantuan Air Bersih dan Sanitasi</h2>
+                        </div>
+                        <v-divider></v-divider>
+                        <div class="card-body">
+                            <v-data-table
+                            hide-default-footer
+                            :headers="sanitasi"
+                            :items="itemSanitasi"
+                            :items-per-page="20"
                             class="elevation-1"
                         ></v-data-table>
                         </div>
@@ -135,6 +150,217 @@ export default {
           { text: 'satuan', value: 'satuan' },
           { text: 'Keterangan', value: 'keterangan' }
         ],
+        sanitasi: [
+          {
+            text: 'Jenis Pengadaan',
+            align: 'start',
+            sortable: false,
+            value: 'jenis',
+          },
+          { text: 'Jumlah', value: 'jumlah' },
+          { text: 'satuan', value: 'satuan' },
+          { text: 'Keterangan', value: 'keterangan' }
+        ],
+        detailSandang: [
+          {
+            text: 'Jenis Sandang',
+            align: 'start',
+            sortable: false,
+            value: 'jenisSandang',
+          },
+          { text: 'Kelamin', value: 'kelamin' },
+          { text: 'Usia', value: 'usia' },
+          { text: 'Jumlah', value: 'jumlahSandang' },
+          { text: 'satuan', value: 'satuanSandang' },
+        ],
+        pakaianIbadah: [
+          {
+            text: 'Agama',
+            align: 'start',
+            sortable: false,
+            value: 'agama',
+          },
+          { text: 'Kelamin', value: 'kelamin' },
+          { text: 'Usia', value: 'usia' },
+          { text: 'Jumlah', value: 'jumlahSandang' },
+          { text: 'satuan', value: 'satuanSandang' },
+        ],
+        sandangLain: [
+          {
+            text: 'Jenis Sandang',
+            align: 'start',
+            sortable: false,
+            value: 'jenis',
+          },
+          { text: 'Jumlah', value: 'jumlah' },
+          { text: 'satuan', value: 'satuan' },
+          { text: 'Keterangan', value: 'keterangan' }
+        ],
+        itemSanitasi:[
+          {
+            jenis: 'Air Bersih',
+            jumlah: 3500,
+            satuan: 'Liter',
+            keterangan: '3 Hari Pertama'
+          },
+          {
+            jenis: 'Air Minum',
+            jumlah: 3500,
+            satuan: 'Liter',
+            keterangan: 'H+3'
+          },
+        ],
+        itemSandangLain:[
+          {
+            jenis: 'Selimut',
+            jumlah: 300,
+            satuan: 'Buah',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Alat tidur',
+            jumlah: 300,
+            satuan: 'Buah',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Sabun mandi',
+            jumlah: 300,
+            satuan: 'Buah',
+            keterangan: 'sabun batang 70 Gram'
+          },
+        ],
+        itemIbadah:[
+          {
+            agama: 'islam',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            agama: 'Kristen',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },
+          {
+            agama: 'Katolik',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            agama: 'Budha',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },{
+            agama: 'Hindu',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            agama: 'Konghucu',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },
+        ],
+        sandang:[
+          {
+            jenisSandang: 'pakaian',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            jenisSandang: 'pakaian',
+            jumlahSandang: 20,
+            usia: 12,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },{
+            jenisSandang: 'pakaian',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            jenisSandang: 'pakaian',
+            jumlahSandang: 20,
+            usia: 12,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },{
+            jenisSandang: 'pakaian',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            jenisSandang: 'pakaian',
+            jumlahSandang: 20,
+            usia: 12,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },{
+            jenisSandang: 'pakaian Sekolah',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            jenisSandang: 'pakaian Sekolah',
+            jumlahSandang: 20,
+            usia: 12,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },{
+            jenisSandang: 'pakaian Sekolah',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            jenisSandang: 'Sepatu Sekolah',
+            jumlahSandang: 20,
+            usia: 12,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },{
+            jenisSandang: 'Sepatu Sekolah',
+            jumlahSandang: 20,
+            usia: 12,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },{
+            jenisSandang: 'Sepatu Sekolah',
+            jumlahSandang: 300,
+            usia: 20,
+            satuanSandang: 'buah',
+            kelamin: 'pria'
+          },
+          {
+            jenisSandang: 'Sepatu Sekolah',
+            jumlahSandang: 20,
+            usia: 12,
+            satuanSandang: 'buah',
+            kelamin: 'Wanita'
+          },
+          
+        ],
         penampungan: [
           {
             jenis: 'Tenda',
@@ -163,17 +389,102 @@ export default {
             keterangan: '-'
           },
           {
-            jenis: 'Barack',
+            jenis: 'Makanan Siap Saji',
             jumlah: 660.00, 
-            satuan: 'Sqm',
+            satuan: 'item',
             keterangan: '-'
           },
           {
-            jenis: 'Gedung Fasilitas',
+            jenis: 'Panci Besar',
             jumlah: 660.00,
-            satuan: 'Sqm',
+            satuan: 'item',
             keterangan: '-'
           },
+          {
+            jenis: 'Baskom',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Pisau Dapur',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Centong Kayu',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Ember Terbuka (40 Liter)',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Ember Terbuka (20 Liter)',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Jerigen (20 liter)',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Panci Besar',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },{
+            jenis: 'Piring Makan',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Sendok Makan',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },{
+            jenis: 'Cangkir / Gelas',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },{
+            jenis: 'Botol Susu Bayi',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },{
+            jenis: 'Kompor ,Bahan Bakar dan Penyimpanan bahan Bakar',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },{
+            jenis: 'Lampu Lentera',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+          {
+            jenis: 'Lilin',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },{
+            jenis: 'lainya',
+            jumlah: 660.00,
+            satuan: 'item',
+            keterangan: '-'
+          },
+
         ],
         center: { lat:-7.779047, lng: 110.416957 },
         options : {strokeColor: '#3F5498',fillColor: '#3F5498',strokeWeight: 1},
