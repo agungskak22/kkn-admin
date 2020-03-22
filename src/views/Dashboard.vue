@@ -33,6 +33,11 @@
           </v-list-item>
         </template>
       </v-list>
+      <template v-slot:append>
+          <div class="pa-2">
+          <v-btn color="2A2D33" block @click="logout()">Logout</v-btn>
+          </div>
+      </template>
     </v-navigation-drawer>
     <v-app-bar
       app
@@ -48,7 +53,7 @@
 </template>
 
 <script>
-// import store from '../store'
+import store from '../store'
   export default {
     props: {
       source: String,
@@ -76,6 +81,13 @@
       },
     ]
     }),
+    methods:{
+      logout(){
+          localStorage.removeItem('token')
+          store.commit('logoutUser')
+          this.$router.push({ name: 'login' })
+      }
+    },
   }
 </script>
 

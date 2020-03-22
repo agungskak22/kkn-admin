@@ -9,7 +9,27 @@
     </div>
     <div style="padding:40px">  
         <v-card style="box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
-            test
+          <div style="padding: 28px;">
+             <v-stepper style="margin-bottom:40px">
+                <v-stepper-header>
+                  <v-stepper-step step="1">Identitas rumah</v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step step="2">Data Keluarga</v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step step="3">Data Rumah</v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step step="4">Data Ruangan</v-stepper-step>
+                </v-stepper-header>
+              </v-stepper>
+               <v-stepper-items>
+                  <div>
+                    <gmap-map :center="center" :options="{zoomControl: true, draggable:false,mapTypeControl: false,scaleControl: false,streetViewControl: false,rotateControl: false,fullscreenControl: true,disableDefaultUi: true}" :zoom="18" style="width: 100%;height:400px;">
+                        <gmap-polygon :options="options" :paths="paths" :draggable="false" :editable="false" >
+                        </gmap-polygon>
+                    </gmap-map>
+                  </div>
+                </v-stepper-items>
+          </div>
         </v-card>
     </div>
   </div>
