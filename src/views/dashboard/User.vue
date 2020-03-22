@@ -247,7 +247,7 @@ export default {
           unit : null,
           dpl : null,
           adpl : null
-        }, 
+        },
         keyword: "",
         owner:{},
         ownerId: null,
