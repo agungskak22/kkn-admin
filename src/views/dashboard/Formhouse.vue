@@ -230,7 +230,7 @@
                         </v-row>
                       </v-card-actions>
                       
-                      <v-card-actions style="padding:24px" step="3" v-else-if="e1==3" >
+                      <v-card-actions step="3" v-else-if="e1==3" >
                         <v-row>
                           <v-col cols="12" sm="6">
                             <v-select
