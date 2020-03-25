@@ -352,6 +352,26 @@ export default {
             }
         )
       },
+      deleteData(id){
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        }
+        let uri = this.$apiUrl + '/owner/' + id;
+            this.$http.delete(uri,config).then(response =>{
+              this.snackbar = true; //mengaktifkan snackbar
+              this.color = 'green'; //memberi warna snackbar
+              this.text = 'Berhasil'; //memasukkan pesan ke snackbar
+              console.log(response)
+              this.getData();
+            }).catch(error =>{
+              this.snackbar = true;
+              this.text = error.response.data.message;
+              this.color = 'red';
+              this.load = false;
+          })
+      },
       logout(){
           localStorage.removeItem('token')
           store.commit('logoutUser')
