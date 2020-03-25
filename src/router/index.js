@@ -54,7 +54,7 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path: 'logistic',
+        path: 'logistic/:type',
         name: 'logistic',
         component: loadDashboardView('Logistic'),
         meta: { requiresAuth: true }

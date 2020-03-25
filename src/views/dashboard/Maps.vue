@@ -5,15 +5,14 @@
             <v-card style="border: 0.5px solid #E0E0E0;box-sizing: border-box;border-radius: 4px;margin:16px">
               <v-layout row wrap style="margin:10px">
               <v-flex xs12 md5>
-               <v-text-field
-                    v-model="keyword"
-                    outlined
-                    label="Search"
-                    hide-details
-                    prepend-inner-icon="mdi-magnify"
-                    color="#E4E4E4"
-                    style="padding:4px"
-                ></v-text-field>
+                <v-select
+                  v-model="filterType"
+                  :items="typeBuildings"
+                  hide-details
+                  label="Jenis Bangunan"
+                  style="padding:4px"
+                  outlined
+                ></v-select>
               </v-flex>
               <v-flex xs12 md4 class="text-right">
                 <v-select
@@ -66,33 +65,73 @@
         <v-row class="mt-0">
           <v-col cols="12" sm="12" md="12">
             <v-checkbox
-              v-model="selected"
+              v-if="selectAll!=null"
+              v-model="selectRendah"
               label="Rendah"
               color="primary"
-              value="Rendah"
+              value="rendah"
               hide-details
+              disabled
+              checked
+              @change="selectEvent()"
             ></v-checkbox>
             <v-checkbox
-              v-model="selected"
+              v-else
+              v-model="selectRendah"
+              label="Rendah"
+              color="primary"
+              value="rendah"
+              hide-details
+              @change="selectEvent()"
+            ></v-checkbox>
+            <v-checkbox
+              v-if="selectAll!=null"
+              v-model="selectSedang"
               label="Sedang"
               color="primary"
               value="sedang"
               hide-details
+              disabled
+              checked
+              @change="selectEvent()"
             ></v-checkbox>
             <v-checkbox
-              v-model="selected"
+              v-else
+              v-model="selectSedang"
+              label="Sedang"
+              color="primary"
+              value="sedang"
+              hide-details
+              @change="selectEvent()"
+            ></v-checkbox>
+            <v-checkbox
+              v-if="selectAll!=null"
+              v-model="selectTinggi"
               label="Tinggi"
               color="primary"
-              value="Tinggi"
+              value="tinggi"
               hide-details
+              disabled
+              checked
+              @change="selectEvent()"
+            ></v-checkbox>
+            <v-checkbox
+              v-else
+              v-model="selectTinggi"
+              label="Tinggi"
+              color="primary"
+              value="tinggi"
+              hide-details
+              @change="selectEvent()"
             ></v-checkbox>
           <v-divider class="mt-4"></v-divider>
             <v-checkbox
-              v-model="selected"
+              v-model="selectAll"
               label="Pilih Semua"
               color="success"
               value="semua"
               hide-details
+              @change="selectEventAll()"
             ></v-checkbox>
           </v-col>
         </v-row>
@@ -100,7 +139,7 @@
         </v-card-text>
         <v-divider class="mb-1"></v-divider>
         <v-card-actions class="mb-1">
-          <v-btn block elevation="0" color="blue darken-1" dark  @click="$router.push({ name : 'logistic'})">Apply</v-btn>
+          <v-btn block elevation="0" color="blue darken-1" dark  @click="$router.push({ name : 'logistic',params:{type: selected}})">Apply</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -111,7 +150,11 @@
 export default {
   data () {
     return {
-        selected:[],
+        selected:null,
+        selectRendah:null,
+        selectSedang:null,
+        selectTinggi:null,
+        selectAll:null,
         dialog: false,
         owner:{},
         keyword:"",
@@ -133,31 +176,57 @@ export default {
         currentMidx: null,
         thumbnail: null,
         currentLocation : { lat : 0, lng : 0},
-        items : ["rendah","sedang","tinggi"],
-        filterDisaster : ""
+        items : ["rendah","sedang","tinggi","semua"],
+        typeBuildings : ["publik","privat","semua"],
+        filterDisaster : "semua",
+        filterType : "semua",
         //optional: offset infowindow so it visually sits nicely on top of our marker
     }
   },
    computed:{
       houseList(){
-        return this.houses.filter((row, index) => {
-            console.log(index)
-            if(this.filterDisaster != '') return row.disaster_status.toLowerCase().includes(this.filterDisaster); //menampilkan data data yang memiliki kemiripan nama dengan variable search yang diinputkan        
-            return true;
+        return this.houses.filter((row) => {
+            if(this.filterType=="semua" || this.filterType=="privat"){
+              if(this.filterDisaster != ''){
+                  if(this.filterDisaster=="semua"){
+                    return row.disaster_status.toLowerCase().includes("");
+                  }
+                  return row.disaster_status.toLowerCase().includes(this.filterDisaster); //menampilkan data data yang memiliki kemiripan nama dengan variable search yang diinputkan        
+              } 
+              return true;
+            } else {
+              return false
+            }
         });     
       },
       landList(){
-        return this.lands.filter((row, index) => {
-            console.log(index)
-            if(this.filterDisaster != '') return row.disaster_status.toLowerCase().includes(this.filterDisaster); //menampilkan data data yang memiliki kemiripan nama dengan variable search yang diinputkan        
-            return true;
+        return this.lands.filter((row) => {
+            if(this.filterType=="semua" || this.filterType=="privat"){
+              if(this.filterDisaster != ''){
+                  if(this.filterDisaster=="semua"){
+                    return row.disaster_status.toLowerCase().includes("");
+                  }
+                  return row.disaster_status.toLowerCase().includes(this.filterDisaster); //menampilkan data data yang memiliki kemiripan nama dengan variable search yang diinputkan        
+              } 
+              return true;
+            } else {
+              return false
+            }
         });     
       },
       publicList(){
-        return this.publics.filter((row, index) => {
-            console.log(index)
-            if(this.filterDisaster != '') return row.disaster_status.toLowerCase().includes(this.filterDisaster); //menampilkan data data yang memiliki kemiripan nama dengan variable search yang diinputkan        
-            return true;
+        return this.publics.filter((row) => {
+            if(this.filterType=="semua" || this.filterType=="publik"){
+              if(this.filterDisaster != ''){
+                  if(this.filterDisaster=="semua"){
+                    return row.disaster_status.toLowerCase().includes("");
+                  }
+                  return row.disaster_status.toLowerCase().includes(this.filterDisaster); //menampilkan data data yang memiliki kemiripan nama dengan variable search yang diinputkan        
+              } 
+              return true;
+            } else {
+              return false
+            }
         });     
       }
   },
@@ -191,6 +260,58 @@ export default {
         await this.$http.get(this.$apiurl + '/publicbuilding',config).then(response =>{
             this.publics = response.data.data
         })
+    },
+    selectEventAll(){
+      if(this.selectAll=="semua"){
+        this.selected=this.selectAll  
+        this.selectRendah="rendah" 
+        this.selectSedang="sedang"
+        this.selectTinggi="tinggi"   
+      }else{
+        this.selected="" 
+        this.selectRendah="" 
+        this.selectSedang=""
+        this.selectTinggi=""   
+      }
+    },
+    selectEvent(){
+      if(this.selectAll=="semua"){
+        this.selected=this.selectAll  
+        this.selectRendah="rendah" 
+        this.selectSedang="sedang"
+        this.selectTinggi="tinggi"   
+      }else{
+        if(this.selectRendah=="rendah"){
+          this.selected=this.selectRendah
+        }else if(this.selectSedang=="sedang"){
+          this.selected=this.selectSedang
+        }else if(this.selectTinggi=="tinggi"){
+          this.selected=this.selectTinggi
+        }
+
+        if(this.selectRendah=="rendah" && this.selectSedang=="sedang"){
+          this.selected=this.selectRendah+this.selectSedang
+        }else if(this.selectRendah=="rendah" && this.selectTinggi=="tinggi"){
+          this.selected=this.selectRendah+this.selectTinggi
+        }else if(this.selectSedang=="sedang" && this.selectTinggi=="tinggi"){
+          this.selected=this.selectSedang+this.selectTinggi
+        }
+        if(this.selectRendah=="rendah" && this.selectSedang=="sedang" && this.selectTinggi=="tinggi"){
+          if(this.selectAll==null){
+            this.selectAll="semua"
+            this.selected=this.selectAll
+          }
+          
+        }
+
+        if(this.selectRendah=="rendah" && this.selectSedang=="sedang" && this.selectTinggi=="tinggi" && this.selectAll==null){
+          this.selectAll=""
+          this.selectRendah=""
+          this.selectSedang=""
+          this.selectTinggi=""
+        }
+      }
+  
     },
     toggleInfoWindow(marker, idx) {
         this.infoWindowPos = this.get_polygon_centroid(marker.polygon.data);
