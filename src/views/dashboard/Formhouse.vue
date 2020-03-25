@@ -23,17 +23,17 @@
               </v-stepper>
                <v-stepper-items>
                   <div>
-                    <gmap-map :center="center" :zoom="18" :options="mapMode==true ? optionmaps : optionmaps2 "  :style="mapMode==false? 'height:200px' : 'height:528px'" style="width: 100%;margin-bottom:16px" @click="markerPlace($event)">
+                    <gmap-map :center="center" :zoom="18" :options="mapMode==true ? optionmaps : optionmaps2 "  :style="mapMode==false? 'height:528px' : 'height:528px'" style="width: 100%;margin-bottom:16px" @click="markerPlace($event)">
                       <gmap-polygon :options="options" :paths="paths" :draggable="true" :editable="true" @paths_changed="updateEdited($event)">
                       </gmap-polygon>
                       <gmap-polygon v-for="(house) in houses" :key="house.id" :options="{ fillColor:house.fillColor,strokeColor:house.strokeColor,strokeWeight: 1 } " :paths="house.polygon.data" :draggable="false" :editable="false">
                       </gmap-polygon>
-                      <gmap-marker v-if="marker==true && mapMode==true"
+                      <gmap-marker v-if="marker==true"
                           :position="center" :draggable="true" @dragend="markerPlace($event)">
                       </gmap-marker>
-                      <gmap-marker v-else-if="marker==true && mapMode==false"
+                      <!-- <gmap-marker v-else-if="marker==true && mapMode==false"
                           :position="center" :draggable="false" @dragend="markerPlace($event)">
-                      </gmap-marker>
+                      </gmap-marker> -->
                   </gmap-map>
                   </div>
                   <v-card style="margin-top:30px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
@@ -171,6 +171,7 @@
                               prepend-inner-icon="mdi-human-male"
                               color="indigo"
                               light
+                              @change="fillPerson()"
                           ></v-text-field>
                           </v-col>
                         <v-col cols="12" md="6">
@@ -182,6 +183,7 @@
                             prepend-inner-icon="mdi-human-female"
                             color="indigo"
                             light
+                            @change="fillPerson()"
                         ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6">
@@ -193,6 +195,7 @@
                             prepend-inner-icon="mdi-human-male-boy"
                             color="indigo"
                             light
+                            @change="fillPerson()"
                         ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6">
@@ -204,6 +207,7 @@
                             prepend-inner-icon="mdi-human-male-girl"
                             color="indigo"
                             light
+                            @change="fillPerson()"
                         ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6">
@@ -216,6 +220,52 @@
                             color="indigo"
                             light
                         ></v-text-field>
+                        </v-col>
+                        <v-col v-for="(item,index) in persons" :key="index" cols="12">
+                          <div class="title-detail">
+                            Orang ke-{{index+1}} 
+                          </div>
+                          <v-row>
+                              <v-col col="4" style="padding-top:0px;padding-bottom:0px">
+                                  <v-select
+                                      v-model="item.religion"
+                                      :items="religions"
+                                      label="Agama"
+                                      outlined
+                                      light
+                                  ></v-select>
+                              </v-col>
+                              <v-col col="4" style="padding-top:0px;padding-bottom:0px">
+                                  <v-text-field
+                                      v-model="item.age"
+                                      height=20
+                                      outlined
+                                      label="Umur"
+                                      prepend-inner-icon="mdi-yoga"
+                                      color="indigo"
+                                      light
+                                  ></v-text-field>
+                              </v-col>
+                              <v-col col="4" style="padding-top:0px;padding-bottom:0px">
+                                  <v-select
+                                      v-if="item.gender==''"
+                                      v-model="item.gender"
+                                      :items="genders"
+                                      label="Gender"
+                                      outlined
+                                      light
+                                  ></v-select>
+                                  <v-select
+                                      v-else
+                                      v-model="item.gender"
+                                      :items="genders"
+                                      label="Gender"
+                                      outlined
+                                      light
+                                      disabled
+                                  ></v-select>
+                              </v-col>
+                          </v-row>
                         </v-col>
                         <v-col cols="12">
                           <div style="float:right">
@@ -366,14 +416,17 @@
                               
                               </div>
                           </div>
-                          <div style="display: flex; justify-content: flex-end">
-                              <v-btn @click="e1=3" tile small color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;border-radius: 2px;width: 120px;height: 39px;margin-right:15px" class="elevation-0">
+                          <v-col cols="12">
+                            <v-spacer></v-spacer>
+                            <div style="float:right">
+                              <v-btn @click="e1=0" small color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;width: 120px;height: 39px;margin-right:15px" class="elevation-0">
                                   Cancel
                               </v-btn>
-                              <v-btn tile dark small color="#FFB802" style="border-radius: 2px;width: 120px;height: 39px;" @click="$router.push({ name : 'ownerDetail',params:{id: $route.params.id}})" class="elevation-0">
-                                  Finish
+                              <v-btn color="primary" dark @click="e1=2" class="elevation-0">
+                                  Next
                               </v-btn>
-                          </div>
+                            </div>
+                          </v-col>
                           </v-card-actions>
                     </div>
                   </v-card>
@@ -584,7 +637,6 @@
 </template>
 
 <script>
-import store from '../../store'
 export default {
   data () {
     return {
@@ -651,10 +703,12 @@ export default {
         idRoom: null,
         categories : ["Ruang Tamu","Kamar Tidur","Kamar Mandi","Dapur","Gudang","Ruang Keluarga","Ruang Makan","Garasi"],
         compass: ["Utara","Barat Laut","Barat","Barat Daya","Selatan","Tenggara","Timur","Timur Laut"], 
+        religions: ["Kristen","Katholik","Islam","Hindu","Budha","Konghucu"],
         e1:0,
         lands:[],
         houses:[],
         windows:[],
+        persons:[],
         savedImage:[],
         addWindow:false,
         showColor1:false,
@@ -672,6 +726,7 @@ export default {
         designers2 : ["Sendiri","Tukang","Arsitek/Teknik Sipil/Kontraktor","Lainnya"],
         disasterStatus : ["rendah","sedang","tinggi"],
         choices : ["Ya","Tidak"],
+        genders : ["Laki-laki","Perempuan"],
         date: new Date().toISOString().substr(0, 10),
         modal: false,
         snackbar: false, 
@@ -704,17 +759,36 @@ export default {
     years () {
       const year = new Date().getFullYear()
       return Array.from({length: year - 1900}, (value, index) => 1901 + index)
-    }
+    },
+    numberOfPerson(){
+      const sumOfPerson = Number(this.form.number_of_adult_female) + Number(this.form.number_of_adult_male) + Number(this.form.number_of_boys) + Number(this.form.number_of_girls)
+      return sumOfPerson
+    },
+    numberOfMale(){
+      const sumOfPerson = Number(this.form.number_of_adult_male) + Number(this.form.number_of_boys)
+      return sumOfPerson
+    },
+    numberOfFemale(){
+      const sumOfPerson = Number(this.form.number_of_adult_female) + Number(this.form.number_of_girls)
+      return sumOfPerson
+    },
   },
   methods:{
+    fillPerson(){
+      this.persons = []
+      for( var i = 0; i < this.numberOfMale; i++){ 
+        this.persons.push({ religion : "", age : 0, gender : "Laki-laki"})
+      }
+      for( var j = 0; j < this.numberOfFemale; j++){ 
+        this.persons.push({ religion : "", age : 0, gender : "Perempuan"})
+      }
+    },
     store(){
       var config = {
           headers: {
               Authorization: 'Bearer ' + localStorage.getItem('token')
           }
       }
-      var payload 
-      console.log(this.form.constructor)
       if(this.edited==true)
       {
         this.data = new FormData
@@ -743,6 +817,7 @@ export default {
         this.data.append('kloset_leher_angsa', this.form.kloset_leher_angsa);
         this.data.append('image', this.images);
         this.data.append('polygons',  JSON.stringify(this.paths[0]));
+        this.data.append('persons',JSON.stringify(this.persons))
         // payload = {
         //   identity: this.form.identity,
         //   fillColor: this.options.fillColor,
@@ -797,6 +872,7 @@ export default {
           this.data.append('kloset_leher_angsa', this.form.kloset_leher_angsa);
           this.data.append('image', this.images);
           this.data.append('polygons', JSON.stringify(this.paths));
+          this.data.append('persons',JSON.stringify(this.persons))
         // payload = {
         //   identity: this.form.identity,
         //   fillColor: this.options.fillColor,
@@ -827,9 +903,9 @@ export default {
       // this.form.owner_id = this.$route.params.id;
       let uri = ''
       if (this.typeInput === 'new') {
-        uri = this.$apiUrl + '/house'
+        uri = this.$apiurl + '/house'
       } else {
-        uri = this.$apiUrl + '/house/'+this.$route.params.house;
+        uri = this.$apiurl + '/house/'+this.$route.params.house;
       }
       this.$http.post(uri,this.data,config).then(response =>{
         this.snackbar = true; //mengaktifkan snackbar
@@ -864,9 +940,9 @@ export default {
       // this.form.owner_id = this.$route.params.id;
       let uri = ''
       if (this.typeInput2 === 'new') {
-        uri = this.$apiUrl + '/room'
+        uri = this.$apiurl + '/room'
       } else {
-        uri = this.$apiUrl + '/room/'+this.idRoom
+        uri = this.$apiurl + '/room/'+this.idRoom
       }
       this.$http.post(uri,payload,config).then(response =>{
         this.snackbar = true; //mengaktifkan snackbar
@@ -875,6 +951,7 @@ export default {
         this.getRooms();
         this.dialogRooms = false;
         this.resetForm2();
+        console.log(response)
         // this.$router.push({ name : 'ownerDetail',params:{id: this.$route.params.id}})
         }).catch(error =>{
         this.snackbar = true;
@@ -944,10 +1021,11 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        this.$http.get(this.$apiUrl + '/house/'+this.$route.params.house,config).then(response =>{
+        this.$http.get(this.$apiurl + '/house/'+this.$route.params.house,config).then(response =>{
             this.form = response.data.data
             this.paths = response.data.data.polygon.data
             this.rooms = response.data.data.room.data
+            this.persons = response.data.data.person.data
             this.savedImage = response.data.data.image.data
             this.options.fillColor = response.data.data.fillColor
             this.options.strokeColor = response.data.data.strokeColor
@@ -968,7 +1046,7 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        this.$http.get(this.$apiUrl + '/room/'+this.idRoom,config).then(response =>{
+        this.$http.get(this.$apiurl + '/room/'+this.idRoom,config).then(response =>{
             this.form2 = response.data.data
             this.windows = response.data.data.window.data
         })
@@ -980,7 +1058,8 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        this.$http.delete(this.$apiUrl + '/house/image/'+id,config).then(response =>{
+        this.$http.delete(this.$apiurl + '/house/image/'+id,config).then(response =>{
+            console.log(response)
             this.getPostData()
         })
     },
@@ -991,7 +1070,8 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        this.$http.delete(this.$apiUrl + '/room/'+id,config).then(response =>{
+        this.$http.delete(this.$apiurl + '/room/'+id,config).then(response =>{
+          console.log(response)
             this.getRooms()
         })
     },
@@ -1001,7 +1081,7 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        this.$http.get(this.$apiUrl + '/house/room/'+this.idHouse,config).then(response =>{
+        this.$http.get(this.$apiurl + '/house/room/'+this.idHouse,config).then(response =>{
             this.rooms = response.data.data
         })
     },
@@ -1026,14 +1106,13 @@ export default {
       }
 
       reader.readAsArrayBuffer(file)
-      var photo;
-      var reader = new FileReader();
-      reader.readAsDataURL(file); 
-      reader.onload = (e) => {
-          var base64data = reader.result;
-          this.thumbnail.base64 = reader.result;  
+      var reader2 = new FileReader();
+      reader2.readAsDataURL(file); 
+      reader2.onload = (e) => {
+          // var base64data = reader.result;
+          this.thumbnail.base64 = reader2.result;  
           this.images.push(reader.result);
-          console.log(base64data);
+          console.log(e);
       }
       setTimeout(() => {  this.thumbnails.push(JSON.parse(JSON.stringify(this.thumbnail))) }, 500);
       
@@ -1046,8 +1125,8 @@ export default {
     clear (item) {
       var index = this.thumbnails.indexOf(item.display);
       this.thumbnails.splice(index, 1);
-      var index = this.images.indexOf(item.base64);
-      this.images.splice(index, 1);
+      var index2 = this.images.indexOf(item.base64);
+      this.images.splice(index2, 1);
     },
     async getAllData(){
         var config = {
@@ -1055,7 +1134,7 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        await this.$http.get(this.$apiUrl + '/owner-land/'+this.$route.params.id,config).then(response =>{
+        await this.$http.get(this.$apiurl + '/owner-land/'+this.$route.params.id,config).then(response =>{
             this.lands = response.data.data
         })
     },
@@ -1065,7 +1144,7 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        await this.$http.get(this.$apiUrl + '/owner-house/'+this.$route.params.id,config).then(response =>{
+        await this.$http.get(this.$apiurl + '/owner-house/'+this.$route.params.id,config).then(response =>{
             this.houses = response.data.data
         })
     },
@@ -1148,6 +1227,14 @@ export default {
 </script>
 
 <style lang="scss">
+.title-detail{
+  font-family: Roboto; //harusnya poppins
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 47px;
+  color:black;
+}
 .breadcrumbs-box{
   background: #FFFFFF;
   height: 64px;

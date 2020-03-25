@@ -48,7 +48,7 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path: 'house',
+        path: 'house/:id',
         name: 'newHouse',
         component: loadDashboardView('Formhouse'),
         meta: { requiresAuth: true }

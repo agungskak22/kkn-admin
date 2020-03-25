@@ -30,7 +30,7 @@
                 class="btn-style"
                 style="width: 200px;
     height: 48px;"
-                @click="$router.push({ name : 'newHouse'})"
+                @click="$router.push({ name : 'newHouse',params:{id: ownerId}})"
                 >
                     Tambah Rumah
                 </v-btn> 
