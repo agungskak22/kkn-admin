@@ -652,7 +652,7 @@ export default {
             to: { name: 'ownerDetail' },
           },
           {
-            text: 'New House',
+            text: 'House',
             disabled: true,
           },
         ],

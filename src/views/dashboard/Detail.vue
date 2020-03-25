@@ -112,8 +112,79 @@
 
           <v-data-table
               :headers="headers2"
-              :items="lands"
+              :items="landList"
               :search="keyword2"
+              :loading="load"
+            >
+              <template v-slot:body="{ items }">
+                <tbody>
+                  <tr v-for="(item,index) in items" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.identity }}</td>
+                    <td>{{ item.size}}</td>
+                    <td>{{ item.type}}</td>
+                    <td>{{ item.description}}</td>
+                    <td class="text-center">
+                      <v-btn 
+                        icon
+                        color="green"
+                        light
+                      >
+                        <v-icon>mdi-eye</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        icon
+                        color="indigo"
+                        light
+                      >
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        icon
+                        color="error"
+                        light
+                      >
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-data-table>
+        </div>
+      </v-card>
+      <v-card style="margin-top:40px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);">
+        <div style="padding:20px">
+          <h2 class="text-md-center">Data Peternakan</h2>
+          <v-layout row wrap style="margin:10px">
+            <v-flex xs6>
+              <v-text-field
+                  v-model="keyword2"
+                  outlined
+                  label="Search"
+                  height="48"
+                  prepend-inner-icon="mdi-magnify"
+                  color="#E4E4E4"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs6 class="text-right">
+                <v-btn
+                depressed
+                dark
+                color = "#219653"
+                class="btn-style"
+                style="width: 200px;
+                height: 48px;"
+                @click="dialog = true"
+                >
+                    Tambah Peternakan
+                </v-btn> 
+            </v-flex>
+          </v-layout>
+          <v-data-table
+              :headers="headers2"
+              :items="livestockList"
+              :search="keyword3"
               :loading="load"
             >
               <template v-slot:body="{ items }">
@@ -215,6 +286,7 @@ export default {
         ],
         keyword1: "",
         keyword2: "",
+        keyword3: "",
         owner:{},
         ownerId: null,
         livestocks:[],
@@ -237,6 +309,18 @@ export default {
           },
         ],
     }
+  },
+  computed:{
+    livestockList(){
+      return this.lands.filter((row) => {
+        return row.type.toLowerCase().includes("Peternakan".toLowerCase())     
+      })
+    },
+    landList(){
+      return this.lands.filter((row) => {
+        return !row.type.toLowerCase().includes("Peternakan".toLowerCase())     
+      })
+    },
   },
   methods:{
       getData(){

@@ -35,7 +35,8 @@
                         </div>
                         <v-divider></v-divider>
                         <div class="card-body">
-                            <img class="preview-image" src="../../assets/gambar.png" alt="">
+                            <img v-if="images.length!=0" class="preview-image" :src="$imageUrl + '/images/'+images[0].filename" alt="">
+                            <img v-else class="preview-image" :src="require('@/assets/photo-add.svg')" >
                         </div>
                     </v-card>
                     <v-card style="margin:10px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
@@ -44,7 +45,23 @@
                         </div>
                         <v-divider></v-divider>
                         <div class="card-body">
-                            still empty
+                            <div v-if="rooms.length!=0">
+                                <div v-for="(room) in rooms" :key="room.id">
+                                  <v-list-item>
+                                      <v-list-item-icon>
+                                          <v-icon large color="indigo">mdi-window-shutter-open</v-icon>
+                                      </v-list-item-icon>
+
+                                      <v-list-item-content>
+                                          <v-list-item-title>{{ room.category }}</v-list-item-title>
+                                          <v-list-item-subtitle>{{ room.size }}</v-list-item-subtitle>
+                                      </v-list-item-content>
+                                  </v-list-item>  
+                                </div>
+                            </div>
+                            <div v-else>
+                                empty
+                            </div>
                         </div>
                     </v-card>
                 </v-flex>
@@ -240,6 +257,7 @@ export default {
         compass: ["Utara","Barat Laut","Barat","Barat Daya","Selatan","Tenggara","Timur","Timur Laut"], 
         e1:0,
         lands:[],
+        images:[],
         showColor1:false,
         showColor2:false,
         dialog: false,
@@ -247,6 +265,7 @@ export default {
         options : {strokeColor: '#3F5498',fillColor: '#3F5498',strokeWeight: 1},
         paths: [],
         allPaths: [],
+        rooms: [],
         mode: 'hexa',
         marker: false,
         designers : ["Sendiri","Tukang","Arsitek/Teknik Sipil/Kontraktor","Lainnya"],
@@ -362,6 +381,8 @@ export default {
         this.$http.get(this.$apiurl + '/house/'+this.$route.params.house,config).then(response =>{
             this.form = response.data.data
             this.paths = response.data.data.polygon.data
+            this.images = response.data.data.image.data
+            this.rooms = response.data.data.room.data
             this.options.fillColor = response.data.data.fillColor
             this.options.strokeColor = response.data.data.strokeColor
             if(response.data.data.polygon.data.length>0)

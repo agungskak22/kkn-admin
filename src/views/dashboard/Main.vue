@@ -13,7 +13,7 @@
               <v-card-text style="padding:16px">
                 <div>
                   <div class="count-title">
-                    240
+                    {{ total_lands }}
                   </div>
                   <div class="count-info">
                     Lahan
@@ -37,7 +37,7 @@
               <v-card-text style="padding:16px">
                 <div>
                   <div class="count-title">
-                    251
+                    {{ total_houses }}
                   </div>
                   <div class="count-info">
                     Rumah
@@ -61,7 +61,7 @@
               <v-card-text style="padding:16px">
                 <div>
                   <div class="count-title">
-                    700
+                    {{ total_livestocks }}
                   </div>
                   <div class="count-info">
                     Ternak
@@ -114,11 +114,9 @@
                     <tr v-for="(item,index) in items" :key="item.id">
                       <td>{{ index + 1 }}</td>
                       <td>{{ item.name }}</td>
+                      <td>{{ item.date_of_birth}}</td>
                       <td>{{ item.created_at.slice(0,22)}}</td>
-                      <td>22</td>
-                      <td>22</td>
-                      <td>22</td>
-                      <td>
+                      <td class="text-center">
                         <v-btn 
                           depressed
                           color="#FFB840"
@@ -133,7 +131,7 @@
                           icon
                           color="indigo"
                           light
-                          @click="editHandler(item)"
+                          @click="showEditDialog(item)"
                         >
                           <v-icon>mdi-pencil</v-icon>
                         </v-btn>
@@ -141,7 +139,7 @@
                           icon
                           color="error"
                           light
-                          @click="deleteData(item.id)"
+                          @click="showDeleteDialog(item.id)"
                         >
                           <v-icon>mdi-delete</v-icon>
                         </v-btn>
@@ -212,7 +210,7 @@
                   </v-dialog>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn tile small color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;border-radius: 2px;width: 120px;height: 39px;margin-right:15px" @click="$router.go(-1)" class="elevation-0">
+                    <v-btn tile small color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;border-radius: 2px;width: 120px;height: 39px;margin-right:15px" @click="dialog=false" class="elevation-0">
                       Cancel
                     </v-btn>
                     <v-btn tile small color="#FFB802" style="border-radius: 2px;width: 120px;height: 39px;" @click="store()" class="elevation-0">
@@ -224,6 +222,51 @@
             </v-row>
           </v-container>
         </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialogDelete" max-width="600px">
+      <v-card>
+        <v-card-title
+          class="headline"
+          primary-title
+          style="background-color:#414550;color:#ffff;height:70px"
+        >
+          Konfirmasi Hapus
+        </v-card-title>
+        <v-card-text style="padding-top:24px">
+          <v-container>
+            <div style="padding:16px">
+              <div class="delete-warning">
+                Apakah anda yakin ingin menghapus data ini?
+              </div>
+            </div>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            depressed
+            dark
+            color = "#A0A4A8"
+            class="btn-style"
+            style="width: 160px;
+            height: 48px;"
+            @click="dialogDelete = false"
+          >
+              Tidak
+          </v-btn>
+          <v-btn
+            depressed
+            dark
+            color = "#EB5757"
+            class="btn-style"
+            style="width: 160px;
+            height: 48px;"
+            @click="deleteOwner()"
+          >
+              Ya
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
     <v-snackbar
@@ -271,20 +314,12 @@ export default {
               value: 'name'
             },
             {
+              text: 'Date_of_birth',
+              value: 'date_of_birth'
+            },
+            {
               text: 'Created_At',
               value: 'created_At'
-            },
-            {
-              text: 'Jumlah Ternak',
-              value: ''
-            },
-            {
-              text: 'Jumlah Rumah',
-              value: ''
-            },
-            {
-              text: 'Jumlah Bangunan',
-              value: ''
             },
             {
               text: 'Detail',
@@ -296,7 +331,12 @@ export default {
             },
         ],
         keyword: '',
+        total_houses: 0,
+        total_lands: 0,
+        total_livestocks: 0,
         load: false,
+        dialogDelete: false,
+        id: null,
     }
   },
   methods:{
@@ -310,13 +350,18 @@ export default {
           if (this.typeInput === 'new') {
             uri = this.$apiurl + '/owner'
           } else {
-            uri = this.$apiurl + '/owner/'+this.$route.params.id;
+            uri = this.$apiurl + '/owner/'+this.form.id;
           }
           this.$http.post(uri,this.form,config).then(response =>{
             this.snackbar = true; //mengaktifkan snackbar
             this.color = 'green'; //memberi warna snackbar
             this.text = 'Berhasil'; //memasukkan pesan ke snackbar
-            this.$router.push({ name : 'ownerDetail',params:{id: response.data.data.id}})
+            if (this.typeInput === 'new') {
+              this.$router.push({ name : 'ownerDetail',params:{id: response.data.data.id}})
+            }else {
+              this.getData()
+              this.dialog=false
+            }
           }).catch(error =>{
             this.snackbar = true;
             this.text = error.response.data.errors;
@@ -331,7 +376,7 @@ export default {
             }
         }
         this.load = true
-        var uri = this.$apiurl + '/my/inputs'
+        var uri = this.$apiurl + '/owner'
             this.$http.get(uri,config).then(response =>{
                 this.owners=response.data.data;
                 this.load = false
@@ -344,13 +389,52 @@ export default {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }
-        var uri = this.$apiUrl + '/my/datas'
+        var uri = this.$apiurl + '/count-data'
             this.$http.get(uri,config).then(response =>{
-                this.total_datas=response.data.total_datas;
+                this.total_houses=response.data.total_houses;
                 this.total_lands=response.data.total_lands;
                 this.total_livestocks=response.data.total_livestocks;
             }
         )
+      },
+      deleteOwner()
+      {
+        var config = {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        }
+        var uri = this.$apiurl + '/owner/' + this.id;
+            this.$http.delete(uri,config).then(response =>{
+              this.snackbar = true; //mengaktifkan snackbar
+              this.color = 'green'; //memberi warna snackbar
+              this.text = 'Berhasil'; //memasukkan pesan ke snackbar
+              console.log(response)
+              this.dialogDelete = false
+              this.getData();
+            }).catch(error =>{
+              this.snackbar = true;
+              this.text = error.response.data.message;
+              this.color = 'red';
+              this.load = false;
+          })
+      },
+      showDeleteDialog(id){
+        this.id = id
+        this.dialogDelete = true
+      },
+      showEditDialog(form){
+        this.form = form
+        this.dialog = true
+        this.typeInput= 'edit'
+      },
+      reset(){
+        this.typeInput = 'new'
+        this.form = {
+           name : null,
+           date_of_birth : null,
+           place_of_birth : null,
+        }
       },
       logout(){
           localStorage.removeItem('token')
@@ -360,6 +444,7 @@ export default {
   },
   mounted(){
     this.getData();
+    this.countData();
   },
 }
 </script>

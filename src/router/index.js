@@ -36,6 +36,24 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
+        path: 'public',
+        name: 'public',
+        component: loadDashboardView('Public'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'public/new',
+        name: 'newPublic',
+        component: loadDashboardView('PublicForm'),
+        meta: { requiresAuth: true }
+      },
+      {
+        name: 'publicEdit',
+        path: 'public/:public',
+        meta: { requiresAuth: true },
+        component: loadDashboardView('PublicForm')
+      },
+      {
         path: 'map',
         name: 'map',
         component: loadDashboardView('Maps'),

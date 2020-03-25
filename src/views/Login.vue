@@ -87,21 +87,29 @@ import store from '../store'
       },
       snackbar: false,
       color: null,
-      text: ''
+      text: '',
+      role: null,
     }),
     methods:{
-      loginAdmin(){
+      async loginAdmin(){
       let uri = this.$apiLogin + '/token'
-      this.$http
+      await this.$http
         .post(uri, this.form)
-        .then(response => {
+        .then(async response => {
           if (response.data.access_token) {
-            store.commit('loginUser')
-            this.snackbar = true
-            this.color = 'green'
-            this.text = 'Berhasil Login'
-            localStorage.setItem('token', response.data.access_token)
-            this.$router.push({ name: 'home' })
+            await this.getData(response.data.access_token)
+            if(this.role == "admin"){
+              store.commit('loginUser')
+              this.snackbar = true
+              this.color = 'green'
+              this.text = 'Berhasil Login'
+              localStorage.setItem('token', response.data.access_token)
+              this.$router.push({ name: 'home' })
+            }else{
+              this.snackbar = true
+              this.color = 'red'
+              this.text = 'Akun anda bukan admin'
+            }
           } else {
             this.snackbar = true
             this.color = 'red'
@@ -114,7 +122,19 @@ import store from '../store'
           this.color = 'red'
           this.load = false
         })
-      }
+      },
+      async getData(token){
+        var config = {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }
+        var uri = this.$apiurl + '/my/limit'
+            await this.$http.get(uri,config).then(response =>{
+                this.role=response.data.data.role;
+            }
+        )
+      },
     }
   }
 </script>

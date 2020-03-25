@@ -75,6 +75,12 @@ import store from '../store'
       },
       {
         id: 3,
+        icon: 'mdi-hospital-building',
+        text: 'Bangunan Publik',
+        to: 'public'
+      },
+      {
+        id: 4,
         icon: 'mdi-google-maps',
         text: 'Maps',
         to: 'map'

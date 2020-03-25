@@ -55,7 +55,7 @@
                       icon
                       color="error"
                       light
-                      @click="showDeleteDialog(item.name)"
+                      @click="showDeleteDialog(item.name,item.id)"
                     >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -132,6 +132,15 @@
                     light
                 ></v-text-field>
               </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="form.role"
+                  :items="roles"
+                  label="Role"
+                  outlined
+                  light
+              ></v-select>
+              </v-col>
               <v-col cols="12" style="padding-top:20px;padding-bottom:0px">
                 <v-btn  @click="register()" block color="#007EFF" height="52" depressed dark>Input Data</v-btn>
               </v-col>
@@ -181,6 +190,7 @@
             class="btn-style"
             style="width: 160px;
             height: 48px;"
+            @click="deleteUser()"
           >
               Ya
           </v-btn>
@@ -246,8 +256,11 @@ export default {
           village : null,
           unit : null,
           dpl : null,
-          adpl : null
+          adpl : null,
+          role : null
         },
+        roles : ["general","admin"],
+        id : null,
         keyword: "",
         owner:{},
         ownerId: null,
@@ -282,14 +295,19 @@ export default {
         )
       },
       register(){
+        var config = {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        }
         var uri = ''
         if(this.newData == true){
           uri = this.$apiurl + '/user'
           this.form.password="12345678"
         } else {
-          uri = this.$apiurl + '/update-profile'
+          uri = this.$apiurl + '/user/'+this.id
         }
-            this.$http.post(uri,this.form).then(response =>{
+            this.$http.post(uri,this.form,config).then(response =>{
                 if(response.status===201){
                     this.dialog = false
                     this.snackbar = true; //mengaktifkan snackbar
@@ -305,12 +323,36 @@ export default {
             }
         )
       },
-      showDeleteDialog(name){
+      deleteUser()
+      {
+        var config = {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        }
+        var uri = this.$apiurl + '/user/' + this.id;
+            this.$http.delete(uri,config).then(response =>{
+              this.snackbar = true; //mengaktifkan snackbar
+              this.color = 'green'; //memberi warna snackbar
+              this.text = 'Berhasil'; //memasukkan pesan ke snackbar
+              console.log(response)
+              this.dialogDelete = false
+              this.getData();
+            }).catch(error =>{
+              this.snackbar = true;
+              this.text = error.response.data.message;
+              this.color = 'red';
+              this.load = false;
+          })
+      },
+      showDeleteDialog(name,id){
         this.name = name
+        this.id = id
         this.dialogDelete = true
       },
       showEditDialog(form){
         this.form = form
+        this.id = form.id
         this.dialog = true
         this.newData = false
       },
