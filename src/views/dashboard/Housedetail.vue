@@ -54,7 +54,7 @@
 
                                       <v-list-item-content>
                                           <v-list-item-title>{{ room.category }}</v-list-item-title>
-                                          <v-list-item-subtitle>{{ room.size }}</v-list-item-subtitle>
+                                          <v-list-item-subtitle style="margin-top:8px">{{ room.size }} m<sup>2</sup></v-list-item-subtitle>
                                       </v-list-item-content>
                                   </v-list-item>  
                                 </div>

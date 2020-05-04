@@ -66,9 +66,51 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
+        path: 'owner/house/:id/:house',
+        name: 'houseEdit',
+        component: loadDashboardView('Formhouse'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: 'house/:id',
         name: 'newHouse',
         component: loadDashboardView('Formhouse'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'land/:id/:land',
+        name: 'landDetail',
+        component: loadDashboardView('Landdetail'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'owner/land/:id/:land',
+        name: 'landEdit',
+        component: loadDashboardView('Formland'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'land/:id',
+        name: 'newLand',
+        component: loadDashboardView('Formland'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'livestock/:id/:land',
+        name: 'livestockDetail',
+        component: loadDashboardView('Livestockdetail'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'owner/livestock/:id/:land',
+        name: 'livestockEdit',
+        component: loadDashboardView('Formlivestock'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'livestock/:id',
+        name: 'newLivestock',
+        component: loadDashboardView('Formlivestock'),
         meta: { requiresAuth: true }
       },
       {

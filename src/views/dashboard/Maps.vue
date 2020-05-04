@@ -53,6 +53,21 @@
                     <gmap-polygon v-for="(data) in publicList" :key="data.id" :options="{ fillColor:data.fillColor,strokeColor:data.strokeColor,strokeWeight: 1 } " @click="toggleInfoWindow(data,data.id)" :clickable="true" :paths="data.polygon.data" :draggable="false" :editable="false">
                     </gmap-polygon>
                 </gmap-map>
+                <v-toolbar
+                  dense
+                  floating
+                  style="position: absolute;top: 185px;left: 26px;"
+                  color="elevation-0"
+                >
+                  <gmap-autocomplete
+                    @place_changed="setPlace"
+                    hide-details
+                    single-line
+                  ></gmap-autocomplete>
+                  <v-btn icon @click="geolocation()">
+                    <v-icon>mdi-crosshairs-gps</v-icon>
+                  </v-btn>
+                </v-toolbar>
             </div>
         </v-card>
     </div>

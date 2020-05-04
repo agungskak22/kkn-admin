@@ -119,7 +119,7 @@
                       v-model="form.floor_size"
                       height=20
                       outlined
-                      label="Luas Lantai"
+                      label="Luas Lantai (meter persegi)"
                       prepend-inner-icon="mdi-home-floor-l"
                       color="indigo"
                       light
@@ -130,7 +130,7 @@
                       v-model="form.construction_size"
                       height=20
                       outlined
-                      label="Luas Bangunan"
+                      label="Luas Bangunan (meter persegi)"
                       prepend-inner-icon="mdi-office-building"
                       color="indigo"
                       light
@@ -141,7 +141,7 @@
                       v-model="form.land_size"
                       height=20
                       outlined
-                      label="Luas Tanah"
+                      label="Luas Tanah (meter persegi)"
                       prepend-inner-icon="mdi-map-outline"
                       color="indigo"
                       light
@@ -372,17 +372,18 @@
                         </v-row>
                         </v-card-actions>
 
-                         <v-card-actions style="padding:24px" step="4" v-else-if="e1==4" >
-                          <div class="item-top">
+                         <v-card-actions step="4" v-else-if="e1==4" >
+                          <v-row>
+                          <v-col cols="12" class="item-top">
                               <span class="item-title" style="color:black">Ruangan</span>
-                              <v-btn class="item-add" text icon @click="resetForm2();dialogRooms=true;typeInput2='new'">
+                              <v-btn class="item-add" style="float:right" text icon @click="resetForm2();dialogRooms=true;typeInput2='new'">
                               <v-icon color="orange" >mdi-plus-circle</v-icon>
                               </v-btn>
-                          </div>
-                          <div v-if="rooms.length<1" class="item-list isEmpty">
+                          </v-col>
+                          <v-col cols="12" v-if="rooms.length<1" style="text-align:center" class="item-list isEmpty">
                               <span>Tidak Terdapat Data</span>
-                          </div>
-                          <div v-else class="item-list">
+                          </v-col>
+                          <v-col cols="12" v-else class="item-list">
                               <div v-for="(room) in rooms" :key="room.id">
                               <v-list-item >
                                   <v-list-item-icon>
@@ -391,7 +392,7 @@
 
                                   <v-list-item-content>
                                       <v-list-item-title>{{ room.category }}</v-list-item-title>
-                                      <v-list-item-subtitle>{{ room.size }}</v-list-item-subtitle>
+                                      <v-list-item-subtitle style="margin-top:8px">{{ room.size }} m<sup>2</sup></v-list-item-subtitle>
                                   </v-list-item-content>
 
                                   <v-list-item-action>
@@ -413,20 +414,20 @@
                                       </v-menu>
                                   </v-list-item-action>
                               </v-list-item>  
-                              
                               </div>
-                          </div>
+                          </v-col>
                           <v-col cols="12">
                             <v-spacer></v-spacer>
                             <div style="float:right">
                               <v-btn @click="e1=0" small color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;width: 120px;height: 39px;margin-right:15px" class="elevation-0">
                                   Cancel
                               </v-btn>
-                              <v-btn color="primary" dark @click="e1=2" class="elevation-0">
-                                  Next
+                              <v-btn color="primary" dark @click="$router.push({ name : 'ownerDetail',params:{id: $route.params.id}})" class="elevation-0">
+                                  Finish
                               </v-btn>
                             </div>
                           </v-col>
+                          </v-row>
                           </v-card-actions>
                     </div>
                   </v-card>
@@ -536,7 +537,7 @@
               v-model="form2.size"
               height=20
               outlined
-              label="Luas Ruangan"
+              label="Luas Ruangan (meter persegi)"
               prepend-inner-icon="mdi-border-all-variant"
               color="indigo"
               light
@@ -615,7 +616,7 @@
                 v-model="form3.size"
                 height=20
                 outlined
-                label="Luas"
+                label="Luas (meter persegi)"
                 prepend-inner-icon="mdi-border-all-variant"
                 color="indigo"
                 light

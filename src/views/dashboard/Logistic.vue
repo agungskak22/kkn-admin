@@ -120,13 +120,13 @@
                         ></v-data-table>
                         </div>
                     </v-card>
-                    <v-card style="margin:10px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
+                    <!-- <v-card style="margin:10px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
                         <v-flex>
                             <v-btn color="primary" block class="elevation-0">
                                 Export To Excel
                             </v-btn>
                         </v-flex>
-                    </v-card>
+                    </v-card> -->
                 </v-flex>
                 </v-layout>
             </div>

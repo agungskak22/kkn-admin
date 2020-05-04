@@ -49,8 +49,8 @@
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.identity }}</td>
                     <td>{{ item.construction_year}}</td>
-                    <td>{{ item.construction_size}}</td>
-                    <td>{{ item.land_size}}</td>
+                    <td>{{ item.construction_size}} m<sup>2</sup></td>
+                    <td>{{ item.land_size}} m<sup>2</sup></td>
                     <td class="text-center">
                       <v-btn 
                         icon
@@ -64,6 +64,7 @@
                         icon
                         color="indigo"
                         light
+                        @click="$router.push({ name : 'houseEdit',params:{id: ownerId,house: item.id}})"
                       >
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
@@ -71,6 +72,7 @@
                         icon
                         color="error"
                         light
+                        @click="deleteHouse(item.id)"
                       >
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
@@ -103,7 +105,7 @@
                 class="btn-style"
                 style="width: 200px;
                 height: 48px;"
-                @click="dialog = true"
+                @click="$router.push({ name : 'newLand',params:{id: ownerId}})"
                 >
                     Tambah Lahan
                 </v-btn> 
@@ -121,7 +123,7 @@
                   <tr v-for="(item,index) in items" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.identity }}</td>
-                    <td>{{ item.size}}</td>
+                    <td>{{ item.size}} m<sup>2</sup></td>
                     <td>{{ item.type}}</td>
                     <td>{{ item.description}}</td>
                     <td class="text-center">
@@ -136,6 +138,7 @@
                         icon
                         color="indigo"
                         light
+                         @click="$router.push({ name : 'landEdit',params:{id: ownerId,land: item.id}})"
                       >
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
@@ -143,6 +146,7 @@
                         icon
                         color="error"
                         light
+                        @click="deleteLand(item.id)"
                       >
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
@@ -175,7 +179,7 @@
                 class="btn-style"
                 style="width: 200px;
                 height: 48px;"
-                @click="dialog = true"
+                @click="$router.push({ name : 'newLivestock',params:{id: ownerId}})"
                 >
                     Tambah Peternakan
                 </v-btn> 
@@ -192,7 +196,7 @@
                   <tr v-for="(item,index) in items" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.identity }}</td>
-                    <td>{{ item.size}}</td>
+                    <td>{{ item.size}} m<sup>2</sup></td>
                     <td>{{ item.type}}</td>
                     <td>{{ item.description}}</td>
                     <td class="text-center">
@@ -207,6 +211,7 @@
                         icon
                         color="indigo"
                         light
+                        @click="$router.push({ name : 'livestockEdit',params:{id: ownerId,land: item.id}})"
                       >
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
@@ -214,6 +219,7 @@
                         icon
                         color="error"
                         light
+                        @click="deleteLand(item.id)"
                       >
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
@@ -368,6 +374,27 @@ export default {
             }
         }
         var uri = this.$apiurl + '/land/' + id;
+            this.$http.delete(uri,config).then(response =>{
+              this.snackbar = true; //mengaktifkan snackbar
+              this.color = 'green'; //memberi warna snackbar
+              this.text = 'Berhasil'; //memasukkan pesan ke snackbar
+              console.log(response)
+              this.getData();
+            }).catch(error =>{
+              this.snackbar = true;
+              this.text = error.response.data.message;
+              this.color = 'red';
+              this.load = false;
+          })
+      },
+      deleteHouse(id)
+      {
+        var config = {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        }
+        var uri = this.$apiurl + '/house/' + id;
             this.$http.delete(uri,config).then(response =>{
               this.snackbar = true; //mengaktifkan snackbar
               this.color = 'green'; //memberi warna snackbar
