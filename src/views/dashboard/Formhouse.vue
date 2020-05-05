@@ -26,6 +26,10 @@
                     <gmap-map :center="center" :zoom="18" :options="mapMode==true ? optionmaps : optionmaps2 "  :style="mapMode==false? 'height:528px' : 'height:528px'" style="width: 100%;margin-bottom:16px" @click="markerPlace($event)">
                       <gmap-polygon :options="options" :paths="paths" :draggable="true" :editable="true" @paths_changed="updateEdited($event)">
                       </gmap-polygon>
+                      <gmap-polygon :options="optionsConstruction" style="z-index:100" :paths="constructionPaths" :draggable="true" :editable="true" @paths_changed="updateEditedConstruction($event)">
+                      </gmap-polygon>
+                      <gmap-polygon v-for="(house) in houses" :key="house.id+99" :options="optionsConstruction" :paths="house.polygon_building.data" :draggable="false" :editable="false">
+                      </gmap-polygon>
                       <gmap-polygon v-for="(house) in houses" :key="house.id" :options="{ fillColor:house.fillColor,strokeColor:house.strokeColor,strokeWeight: 1 } " :paths="house.polygon.data" :draggable="false" :editable="false">
                       </gmap-polygon>
                       <gmap-marker v-if="marker==true"
@@ -34,11 +38,76 @@
                       <!-- <gmap-marker v-else-if="marker==true && mapMode==false"
                           :position="center" :draggable="false" @dragend="markerPlace($event)">
                       </gmap-marker> -->
-                  </gmap-map>
+                    </gmap-map>
+                    <v-row>
+                      <v-col cols="12" md="12">
+                        <v-card
+                          style="margin-top:8px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
+                          <div style="padding: 16px;">
+                            <h3>Input Berdasarkan Alamat</h3>
+                            <v-card
+                              style="margin-top:8px;margin-bottom:8px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
+                            <div style="padding: 16px;">
+                              <gmap-autocomplete
+                              @place_changed="setPlace"
+                              hide-details
+                              single-line
+                              style="height:38px;width:100%;"
+                              placeholder="Masukan Alamat"
+                              ></gmap-autocomplete>
+                            </div>
+                            </v-card>
+                            <h3>Input Ukuran</h3>
+                            <v-row>
+                              <v-col cols="12" md="6">
+                              <v-text-field
+                                  v-model="form.land_size"
+                                  height=20
+                                  outlined
+                                  label="Luas Tanah (meter persegi)"
+                                  prepend-inner-icon="mdi-map-outline"
+                                  color="indigo"
+                                  light
+                              ></v-text-field>
+                              </v-col>
+                              <v-col cols="12" md="6">
+                              <v-text-field
+                                  v-model="form.floor_size"
+                                  height=20
+                                  outlined
+                                  label="Luas Lantai (meter persegi)"
+                                  prepend-inner-icon="mdi-office-building"
+                                  color="indigo"
+                                  light
+                                  :rules="constructionSizeRule"
+                              ></v-text-field>
+                              </v-col>
+                            </v-row>
+                            <v-card-actions>
+                            <v-btn dark height="40" width="120" color="#E77271" @click="clearMarker()" class="elevation-0">
+                              Clear
+                            </v-btn>
+                            <v-btn dark color="primary" height="40" width="140" @click="setMarker()" class="elevation-0">
+                              Set Tanah
+                            </v-btn>
+                            <v-btn :disabled="isValid" color="warning" height="40" width="140" @click="setConstruction();isConstructionAvail=true" class="elevation-0">
+                              Set Lantai
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                tile small color="indigo" class="white--text elevation-0" @click="dialog=true" style="border-radius:4px;height:40px;color:#FFFFFF;margin-bottom:16px"
+                              >
+                                <v-icon color="white">mdi-format-color-fill</v-icon>
+                              </v-btn>
+                            </v-card-actions>
+                          </div>
+                        </v-card>    
+                      </v-col>
+                    </v-row>
                   </div>
                   <v-card style="margin-top:30px;box-shadow: 0px 2px 4px rgba(50, 50, 71, 0.06), 0px 2px 2px rgba(50, 50, 71, 0.06);border: 1px solid #E8E8E8;">
                     <div style="padding: 28px;">
-                    <v-card-actions>
+                    <!-- <v-card-actions>
                     <v-btn dark height="40" width="120" color="#E77271" @click="clearMarker()" class="elevation-0">
                       Clear
                     </v-btn>
@@ -51,7 +120,7 @@
                       >
                         <v-icon color="white">mdi-format-color-fill</v-icon>
                       </v-btn>
-                  </v-card-actions>
+                  </v-card-actions> -->
                       <v-card-actions v-if="e1 == 0">
                         <v-row>
                     <v-col cols="12" md="6">
@@ -122,6 +191,7 @@
                       label="Luas Lantai (meter persegi)"
                       prepend-inner-icon="mdi-home-floor-l"
                       color="indigo"
+                      disabled
                       light
                   ></v-text-field>
                   </v-col>  
@@ -141,6 +211,7 @@
                       v-model="form.land_size"
                       height=20
                       outlined
+                      disabled
                       label="Luas Tanah (meter persegi)"
                       prepend-inner-icon="mdi-map-outline"
                       color="indigo"
@@ -152,6 +223,9 @@
                     <div style="float:right">
                       <v-btn @click="e1=0" small color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;width: 120px;height: 39px;margin-right:15px" class="elevation-0">
                           Cancel
+                      </v-btn>
+                      <v-btn dark color="warning" @click="storeFinish()" style="margin-right:15px" class="elevation-0">
+                          Finish
                       </v-btn>
                       <v-btn color="primary" dark @click="e1=2" class="elevation-0">
                           Next
@@ -226,7 +300,47 @@
                             Orang ke-{{index+1}} 
                           </div>
                           <v-row>
-                              <v-col col="4" style="padding-top:0px;padding-bottom:0px">
+                              <v-col col="6" style="padding-top:0px;padding-bottom:0px">
+                                  <v-text-field
+                                      v-model="item.name"
+                                      height=20
+                                      outlined
+                                      label="Nama"
+                                      prepend-inner-icon="mdi-yoga"
+                                      color="indigo"
+                                      light
+                                  ></v-text-field>
+                              </v-col>
+                              <v-col col="6" style="padding-top:0px;padding-bottom:0px">
+                                  <v-dialog
+                                    ref="dialog"
+                                    v-model="modal"
+                                    :return-value.sync="item.date_of_birth"
+                                    persistent
+                                    width="290px"
+                                  >
+                                    <template v-slot:activator="{ on }">
+                                      <v-text-field
+                                        v-model="item.date_of_birth"
+                                        outlined
+                                        label="Tanggal Lahir"
+                                        prepend-inner-icon="mdi-calendar-range"
+                                        color="indigo"
+                                        light
+                                        readonly
+                                        v-on="on"
+                                      ></v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="item.date_of_birth" scrollable>
+                                      <v-spacer></v-spacer>
+                                      <v-btn text color="primary" @click="modal = false">Cancel</v-btn>
+                                      <v-btn text color="primary" @click="$refs.dialog[index].save(item.date_of_birth)">OK</v-btn>
+                                    </v-date-picker>
+                                  </v-dialog>
+                              </v-col>
+                            </v-row>
+                            <v-row>
+                              <v-col col="6" style="padding-top:0px;padding-bottom:0px">
                                   <v-select
                                       v-model="item.religion"
                                       :items="religions"
@@ -235,18 +349,7 @@
                                       light
                                   ></v-select>
                               </v-col>
-                              <v-col col="4" style="padding-top:0px;padding-bottom:0px">
-                                  <v-text-field
-                                      v-model="item.age"
-                                      height=20
-                                      outlined
-                                      label="Umur"
-                                      prepend-inner-icon="mdi-yoga"
-                                      color="indigo"
-                                      light
-                                  ></v-text-field>
-                              </v-col>
-                              <v-col col="4" style="padding-top:0px;padding-bottom:0px">
+                              <v-col col="6" style="padding-top:0px;padding-bottom:0px">
                                   <v-select
                                       v-if="item.gender==''"
                                       v-model="item.gender"
@@ -271,6 +374,9 @@
                           <div style="float:right">
                             <v-btn @click="e1=0" tile small color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;border-radius: 4px;width: 120px;height: 39px;margin-right:15px" class="elevation-0">
                                 Cancel
+                            </v-btn>
+                            <v-btn dark color="warning" @click="storeFinish()" style="margin-right:15px" class="elevation-0">
+                                Finish
                             </v-btn>
                             <v-btn color="primary" dark @click="e1=3" class="elevation-0">
                                 Next
@@ -363,6 +469,9 @@
                             <div style="float:right">
                             <v-btn @click="e1=2" color="#FFFFFF" style="border: 1px solid rgba(151, 151, 151, 0.45);color:#979797;box-sizing: border-box;border-radius: 4px;width: 120px;height: 39px;margin-right:15px" class="elevation-0">
                                 Cancel
+                            </v-btn>
+                            <v-btn dark color="warning" @click="storeFinish()" style="margin-right:15px" class="elevation-0">
+                                Finish
                             </v-btn>
                             <v-btn dark color="primary" @click="store()" class="elevation-0">
                                 Next
@@ -638,6 +747,7 @@
 </template>
 
 <script>
+import {gmapApi} from 'vue2-google-maps'
 export default {
   data () {
     return {
@@ -657,20 +767,25 @@ export default {
             disabled: true,
           },
         ],
+        address : "",
+        land_length : null,
+        land_width : null,
+        land_size : null,
+        temp_land_size : null,
         form : {
            identity : null,
            address : null,
-           construction_year : null,
-           land_size : null,
-           construction_size : null,
-           floor_size : null,
-           floors_number : null,
+           construction_year : 0,
+           land_size : 0,
+           construction_size : 0,
+           floor_size : 0,
+           floors_number : 0,
            side_facing : null,
-           number_of_adult_male : null,
-           number_of_adult_female : null,
-           number_of_boys : null,
-           number_of_girls : null,
-           number_of_married_couples : null,
+           number_of_adult_male : 0,
+           number_of_adult_female : 0,
+           number_of_boys : 0,
+           number_of_girls : 0,
+           number_of_married_couples : 0,
            designer : null,
            septic_tank : "Ya",
            grease_trap : "Ya",
@@ -718,7 +833,9 @@ export default {
         dialogRooms: false,
         center: { lat:-7.779047, lng: 110.416957 },
         options : {strokeColor: '#3F5498',fillColor: '#3F5498',strokeWeight: 1},
+        optionsConstruction : {strokeColor: '#98963F',fillColor: '#98963F',strokeWeight: 1},
         paths: [],
+        constructionPaths: [],
         allPaths: [],
         mode: 'hexa',
         marker: false,
@@ -749,14 +866,20 @@ export default {
           display : null,
           base64 : null
         },
+        editedConstruction : false,
+        isConstructionAvail : false,
         rules: {
           required: value => !!value || 'Data is required',
           numberOnly: value => !isNaN(value) || 'Number Only',
           textOnly: value => RegExp(/^[A-Za-z ]+$/).test(value) || 'Text Only'
         },
+        constructionSizeRule : [
+           value => value<=this.form.land_size || 'Tidak boleh melebihi luas tanah', 
+        ],
     }
   },
   computed : {
+    google: gmapApi,
     years () {
       const year = new Date().getFullYear()
       return Array.from({length: year - 1900}, (value, index) => 1901 + index)
@@ -773,15 +896,102 @@ export default {
       const sumOfPerson = Number(this.form.number_of_adult_female) + Number(this.form.number_of_girls)
       return sumOfPerson
     },
+    isValid(){
+      if(this.form.land_size < this.form.floor_size || this.form.land_size==null || this.form.floor_size==null){
+        return true
+      }else{
+        return false
+      }
+    },
+    minLat(){
+      var minLat
+      if(this.edited){
+        minLat = this.paths[0][0].lat
+        for (let i=0; i<this.paths[0].length; i++) {
+          if(minLat>= this.paths[0][i].lat){
+            minLat = this.paths[0][i].lat;
+          }
+        }
+      }else{
+        minLat = this.paths[0].lat
+        for (let i=0; i<this.paths.length; i++) {
+          if(minLat>= this.paths[i].lat){
+            minLat = this.paths[i].lat;
+          }
+        }
+      }
+      
+      return minLat
+    },
+    maxLat(){
+      var maxLat
+      if(this.edited){
+        maxLat = this.paths[0][0].lat
+        for (let i=0; i<this.paths[0].length; i++) {
+          if(maxLat<= this.paths[0][i].lat){
+            maxLat = this.paths[0][i].lat;
+          }
+        }
+      }else{
+        maxLat = this.paths[0].lat
+        for (let i=0; i<this.paths.length; i++) {
+          if(maxLat<= this.paths[i].lat){
+            maxLat = this.paths[i].lat;
+          }
+        }
+      }
+      
+      return maxLat
+    },
+    minLng(){
+      var minLng
+      if(this.edited){
+        minLng = this.paths[0][0].Lng
+        for (let i=0; i<this.paths[0].length; i++) {
+          if(minLng>= this.paths[0][i].lng){
+            minLng = this.paths[0][i].lng;
+          }
+        }
+      }else{
+        minLng = this.paths[0].lng
+        for (let i=0; i<this.paths.length; i++) {
+          if(minLng>= this.paths[i].lng){
+            minLng = this.paths[i].lng;
+          }
+        }
+      }
+      
+      return minLng
+    },
+    maxLng(){
+      var maxLng
+      if(this.edited){
+        maxLng = this.paths[0][0].lng
+        for (let i=0; i<this.paths[0].length; i++) {
+          if(maxLng<= this.paths[0][i].lng){
+            maxLng = this.paths[0][i].lng;
+          }
+        }
+      }else{
+        maxLng = this.paths[0].lng
+        for (let i=0; i<this.paths.length; i++) {
+          if(maxLng<= this.paths[i].lng){
+            maxLng = this.paths[i].lng;
+          }
+        }
+      }
+      
+      return maxLng
+    }, 
   },
   methods:{
     fillPerson(){
       this.persons = []
       for( var i = 0; i < this.numberOfMale; i++){ 
-        this.persons.push({ religion : "", age : 0, gender : "Laki-laki"})
+        this.persons.push({ religion : "", age : 0, gender : "Laki-laki", name : ""})
       }
       for( var j = 0; j < this.numberOfFemale; j++){ 
-        this.persons.push({ religion : "", age : 0, gender : "Perempuan"})
+        this.persons.push({ religion : "", age : 0, gender : "Perempuan", name : ""})
       }
     },
     store(){
@@ -900,7 +1110,11 @@ export default {
         //   polygons: this.paths
         // }
       }
-      
+      if(this.editedConstruction == true){
+        this.data.append('polygons_building', JSON.stringify(this.constructionPaths[0]));
+      }else{
+        this.data.append('polygons_building', JSON.stringify(this.constructionPaths));
+      }
       // this.form.owner_id = this.$route.params.id;
       let uri = ''
       if (this.typeInput === 'new') {
@@ -914,6 +1128,149 @@ export default {
         this.text = 'Berhasil'; //memasukkan pesan ke snackbar
         this.e1=4
         this.idHouse=response.data.data.id;
+        // this.$router.push({ name : 'ownerDetail',params:{id: this.$route.params.id}})
+        }).catch(error =>{
+        this.snackbar = true;
+        this.text = error.response.data.errors;
+        this.color = 'red';
+        this.load = false;
+      })
+    },
+    storeFinish(){
+      var config = {
+          headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+      }
+      if(this.edited==true)
+      {
+        this.data = new FormData
+        this.data.append('identity', this.form.identity);
+        this.data.append('disaster_status', this.form.disaster_status);
+        this.data.append('fillColor', this.options.fillColor);
+        this.data.append('strokeColor', this.options.strokeColor);
+        this.data.append('owner_id',  this.$route.params.id);
+        this.data.append('address', this.form.address);
+        this.data.append('construction_year', this.form.construction_year);
+        this.data.append('land_size', this.form.land_size);
+        this.data.append('construction_size', this.form.construction_size);
+        this.data.append('floor_size', this.form.floor_size);
+        this.data.append('floors_number', this.form.floors_number);
+        this.data.append('side_facing', this.form.side_facing);
+        this.data.append('number_of_adult_male', this.form.number_of_adult_male);
+        this.data.append('number_of_adult_female', this.form.number_of_adult_female);
+        this.data.append('number_of_boys', this.form.number_of_boys);
+        this.data.append('number_of_girls', this.form.number_of_girls);
+        this.data.append('number_of_married_couples', this.form.number_of_married_couples);
+        this.data.append('designer', this.form.designer);
+        this.data.append('constructor', this.form.constructor);
+        this.data.append('septic_tank', this.form.septic_tank);
+        this.data.append('grease_trap', this.form.grease_trap);
+        this.data.append('rain_water_managment', this.form.rain_water_managment);
+        this.data.append('kloset_leher_angsa', this.form.kloset_leher_angsa);
+        this.data.append('image', this.images);
+        this.data.append('polygons',  JSON.stringify(this.paths[0]));
+        this.data.append('persons',JSON.stringify(this.persons))
+        // payload = {
+        //   identity: this.form.identity,
+        //   fillColor: this.options.fillColor,
+        //   strokeColor: this.options.strokeColor,
+        //   owner_id: this.$route.params.id,
+        //   address : this.form.identity,
+        //   construction_year : this.form.construction_year,
+        //   land_size : this.form.land_size,
+        //   construction_size : this.form.construction_size,
+        //   floor_size : this.form.floor_size,
+        //   floors_number : this.form.floors_number,
+        //   side_facing : this.form.side_facing,
+        //   number_of_adult_male : this.form.number_of_adult_male,
+        //   number_of_adult_female : this.form.number_of_adult_female,
+        //   number_of_boys : this.form.number_of_boys,
+        //   number_of_girls : this.form.number_of_girls,
+        //   number_of_married_couples : this.form.number_of_married_couples,
+        //   designer : this.form.designer,
+        //   constructor : this.form.constructor,
+        //   septic_tank : this.form.septic_tank,
+        //   grease_trap : this.form.grease_trap,
+        //   rain_water_managment : this.form.rain_water_managment,
+        //   kloset_leher_angsa : this.form.kloset_leher_angsa,
+        //   polygons: JSON.stringify(this.paths[0])
+        // }
+      }
+      else if(this.edited==false)
+      {
+          this.data = new FormData
+          this.data.append('identity', this.form.identity);
+          this.data.append('disaster_status', this.form.disaster_status);
+          this.data.append('fillColor', this.options.fillColor);
+          this.data.append('strokeColor', this.options.strokeColor);
+          this.data.append('owner_id',  this.$route.params.id);
+          this.data.append('address', this.form.address);
+          this.data.append('construction_year', this.form.construction_year);
+          this.data.append('land_size', this.form.land_size);
+          this.data.append('construction_size', this.form.construction_size);
+          this.data.append('floor_size', this.form.floor_size);
+          this.data.append('floors_number', this.form.floors_number);
+          this.data.append('side_facing', this.form.side_facing);
+          this.data.append('number_of_adult_male', this.form.number_of_adult_male);
+          this.data.append('number_of_adult_female', this.form.number_of_adult_female);
+          this.data.append('number_of_boys', this.form.number_of_boys);
+          this.data.append('number_of_girls', this.form.number_of_girls);
+          this.data.append('number_of_married_couples', this.form.number_of_married_couples);
+          this.data.append('designer', this.form.designer);
+          this.data.append('constructor', this.form.constructor);
+          this.data.append('septic_tank', this.form.septic_tank);
+          this.data.append('grease_trap', this.form.grease_trap);
+          this.data.append('rain_water_managment', this.form.rain_water_managment);
+          this.data.append('kloset_leher_angsa', this.form.kloset_leher_angsa);
+          this.data.append('image', this.images);
+          this.data.append('polygons', JSON.stringify(this.paths));
+          this.data.append('persons',JSON.stringify(this.persons))
+        // payload = {
+        //   identity: this.form.identity,
+        //   fillColor: this.options.fillColor,
+        //   strokeColor: this.options.strokeColor,
+        //   owner_id: this.$route.params.id,
+        //   address : this.form.identity,
+        //   construction_year : this.form.construction_year,
+        //   land_size : this.form.land_size,
+        //   construction_size : this.form.construction_size,
+        //   floor_size : this.form.floor_size,
+        //   floors_number : this.form.floors_number,
+        //   side_facing : this.form.side_facing,
+        //   number_of_adult_male : this.form.number_of_adult_male,
+        //   number_of_adult_female : this.form.number_of_adult_female,
+        //   number_of_boys : this.form.number_of_boys,
+        //   number_of_girls : this.form.number_of_girls,
+        //   number_of_married_couples : this.form.number_of_married_couples,
+        //   designer : this.form.designer,
+        //   constructor : this.form.constructor,
+        //   septic_tank : this.form.septic_tank,
+        //   grease_trap : this.form.grease_trap,
+        //   rain_water_managment : this.form.rain_water_managment,
+        //   kloset_leher_angsa : this.form.kloset_leher_angsa,
+        //   polygons: this.paths
+        // }
+      }
+      if(this.editedConstruction == true){
+        this.data.append('polygons_building', JSON.stringify(this.constructionPaths[0]));
+      }else{
+        this.data.append('polygons_building', JSON.stringify(this.constructionPaths));
+      }
+      // this.form.owner_id = this.$route.params.id;
+      let uri = ''
+      if (this.typeInput === 'new') {
+        uri = this.$apiurl + '/house'
+      } else {
+        uri = this.$apiurl + '/house/'+this.$route.params.house;
+      }
+      this.$http.post(uri,this.data,config).then(response =>{
+        this.snackbar = true; //mengaktifkan snackbar
+        this.color = 'green'; //memberi warna snackbar
+        this.text = 'Berhasil'; //memasukkan pesan ke snackbar
+        this.e1=4
+        this.idHouse=response.data.data.id;
+        this.$router.push({ name : 'ownerDetail',params:{id: this.$route.params.id}})
         // this.$router.push({ name : 'ownerDetail',params:{id: this.$route.params.id}})
         }).catch(error =>{
         this.snackbar = true;
@@ -1025,6 +1382,7 @@ export default {
         this.$http.get(this.$apiurl + '/house/'+this.$route.params.house,config).then(response =>{
             this.form = response.data.data
             this.paths = response.data.data.polygon.data
+            this.constructionPaths = response.data.data.polygon_building.data
             this.rooms = response.data.data.room.data
             this.persons = response.data.data.person.data
             this.savedImage = response.data.data.image.data
@@ -1038,6 +1396,7 @@ export default {
             {
               this.marker = false
             }
+            this.isConstructionAvail=true
         })
     },
     getRoomData()
@@ -1149,24 +1508,102 @@ export default {
             this.houses = response.data.data
         })
     },
+    // updateEdited(mvcArray) {
+    //   for( var i = 0; i < this.houses.length; i++){ 
+    //     if ( this.houses[i].id == this.$route.params.house) {
+    //       this.houses.splice(i, 1); 
+    //     }
+    //   }
+    //   let paths = [];
+    //   for (let i=0; i<mvcArray.getLength(); i++) {
+    //     let path = [];
+    //     for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
+    //       let point = mvcArray.getAt(i).getAt(j);
+    //       path.push({lat: point.lat(), lng: point.lng()});
+    //     }
+    //     paths.push(path);
+    //   }
+    //   this.edited = true
+    //   // this.edited = paths;
+    //   this.paths = paths;
+    // },
     updateEdited(mvcArray) {
       for( var i = 0; i < this.houses.length; i++){ 
         if ( this.houses[i].id == this.$route.params.house) {
           this.houses.splice(i, 1); 
         }
       }
+      this.constructionPaths = []
       let paths = [];
+      var pathArea = [];
       for (let i=0; i<mvcArray.getLength(); i++) {
         let path = [];
         for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
           let point = mvcArray.getAt(i).getAt(j);
           path.push({lat: point.lat(), lng: point.lng()});
+          pathArea.push(new this.google.maps.LatLng(point.lat(), point.lng()));
         }
         paths.push(path);
       }
+      this.land_size = Math.floor(this.google.maps.geometry.spherical.computeArea(pathArea))
+      this.form.land_size = Math.floor(this.google.maps.geometry.spherical.computeArea(pathArea))
       this.edited = true
       // this.edited = paths;
       this.paths = paths;
+      setTimeout(function(){ 
+        const $ = require('jquery');
+        // We declare it globally
+        window.$ = $;
+        // $('.div[style*="opacity: 0.5]').hide();
+        $("body").find('div[style*="opacity: 0.5"]').hide() }, 1000)
+      if(this.isConstructionAvail){
+        var x = this
+        setTimeout(function() {
+            x.setConstruction();
+        }, 2000);
+      }
+    },
+    updateEditedConstruction(mvcArray) {
+      for( var i = 0; i < this.houses.length; i++){ 
+        if ( this.houses[i].id == this.$route.params.house) {
+          this.houses.splice(i, 1); 
+        }
+      }
+      if(this.edited){
+        this.paths = this.paths[0]
+        this.edited = false
+      }
+      let paths = [];
+      var pathArea = [];
+      for (let i=0; i<mvcArray.getLength(); i++) {
+        let path = [];
+        for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
+          let point = mvcArray.getAt(i).getAt(j);
+          if((point.lat()<this.minLat||point.lat()>this.maxLat) 
+          || (point.lng()<this.minLng||point.lng()>this.maxLng) ){
+            path=this.constructionPaths[0]
+            pathArea = [new this.google.maps.LatLng(this.constructionPaths[0][0].lat,this.constructionPaths[0][0].lng),
+                        new this.google.maps.LatLng(this.constructionPaths[0][1].lat,this.constructionPaths[0][1].lng),
+                        new this.google.maps.LatLng(this.constructionPaths[0][2].lat,this.constructionPaths[0][2].lng),
+                        new this.google.maps.LatLng(this.constructionPaths[0][3].lat,this.constructionPaths[0][3].lng)]
+            break;
+          }else{
+            path.push({lat: point.lat(), lng: point.lng()});
+            pathArea.push(new this.google.maps.LatLng(point.lat(), point.lng()));
+          }
+        }
+        paths.push(path);
+      }
+      this.form.floor_size = Math.floor(this.google.maps.geometry.spherical.computeArea(pathArea))
+      this.editedConstruction = true
+      // this.edited = paths;
+      setTimeout(function(){ 
+        const $ = require('jquery');
+        // We declare it globally
+        window.$ = $;
+        // $('.div[style*="opacity: 0.5]').hide();
+        $("body").find('div[style*="opacity: 0.5"]').hide() }, 1000)
+      this.constructionPaths = paths;
     },
     updateMarker(mvcArray) {
       let paths = [];
@@ -1194,21 +1631,108 @@ export default {
       this.marker=true
       this.paths=[]
     },
+    // setMarker()
+    // {
+    //   //Patokan
+    //   // {lat:-7.780047, lng: 110.415957 },{lat:-7.780047, lng: 110.417957 },{lat:-7.778047, lng: 110.417957 },{lat:-7.778047, lng: 110.415957 } 
+    //   this.marker=false
+    //   this.paths=[]
+    //   this.paths.push({lat : this.center.lat - 0.0001, lng : this.center.lng - 0.0001})
+    //   this.paths.push({lat : this.center.lat - 0.0001, lng : this.center.lng + 0.0001})
+    //   this.paths.push({lat : this.center.lat + 0.0001, lng : this.center.lng + 0.0001})
+    //   this.paths.push({lat : this.center.lat + 0.0001, lng : this.center.lng - 0.0001})
+    // },
     setMarker()
     {
       //Patokan
       // {lat:-7.780047, lng: 110.415957 },{lat:-7.780047, lng: 110.417957 },{lat:-7.778047, lng: 110.417957 },{lat:-7.778047, lng: 110.415957 } 
+      // 1 meter = 0.0000050
       this.marker=false
       this.paths=[]
-      this.paths.push({lat : this.center.lat - 0.0001, lng : this.center.lng - 0.0001})
-      this.paths.push({lat : this.center.lat - 0.0001, lng : this.center.lng + 0.0001})
-      this.paths.push({lat : this.center.lat + 0.0001, lng : this.center.lng + 0.0001})
-      this.paths.push({lat : this.center.lat + 0.0001, lng : this.center.lng - 0.0001})
+      this.paths.push({lat : this.center.lat - (Math.sqrt(this.form.land_size)*0.0000045125), lng : this.center.lng - (Math.sqrt(this.form.land_size)*0.0000045125)})
+      this.paths.push({lat : this.center.lat - (Math.sqrt(this.form.land_size)*0.0000045125), lng : this.center.lng + (Math.sqrt(this.form.land_size)*0.0000045125)})
+      this.paths.push({lat : this.center.lat + (Math.sqrt(this.form.land_size)*0.0000045125), lng : this.center.lng + (Math.sqrt(this.form.land_size)*0.0000045125)})
+      this.paths.push({lat : this.center.lat + (Math.sqrt(this.form.land_size)*0.0000045125), lng : this.center.lng - (Math.sqrt(this.form.land_size)*0.0000045125)})
+      // var x = this
+      
+      setTimeout(function(){ 
+        const $ = require('jquery');
+        // We declare it globally
+        window.$ = $;
+        // $('.div[style*="opacity: 0.5]').hide();
+        $("body").find('div[style*="opacity: 0.5"]').hide() }, 1000)
+      // const $ = require('jquery');
+      // // We declare it globally
+      // window.$ = $;
+      // // $('.div[style*="opacity: 0.5]').hide();
+      // $("body").find('div[style*="opacity: 0.5"]').hide()
+      // $("div").children( 'style*="opacity: 0.5"' ).hide()
+      // this.land_size = this.google.maps.geometry.spherical.computeArea(path)
+    },
+    setConstruction()
+    {
+      if(this.edited){
+        this.paths = this.paths[0]
+        this.edited=false
+      }
+      var center = this.get_polygon_centroid(this.paths)
+      console.log(center)
+      //Patokan
+      // {lat:-7.780047, lng: 110.4125957 },{lat:-7.780047, lng: 110.417957 },{lat:-7.778047, lng: 110.417957 },{lat:-7.778047, lng: 110.4125957 } 
+      // 1 meter = 0.0000050
+      this.constructionPaths=[]
+      this.constructionPaths.push({lat : center.lat - (Math.sqrt(this.form.floor_size)*0.0000045125), lng : center.lng - (Math.sqrt(this.form.floor_size)*0.0000045125)})
+      this.constructionPaths.push({lat : center.lat - (Math.sqrt(this.form.floor_size)*0.0000045125), lng : center.lng + (Math.sqrt(this.form.floor_size)*0.0000045125)})
+      this.constructionPaths.push({lat : center.lat + (Math.sqrt(this.form.floor_size)*0.0000045125), lng : center.lng + (Math.sqrt(this.form.floor_size)*0.0000045125)})
+      this.constructionPaths.push({lat : center.lat + (Math.sqrt(this.form.floor_size)*0.0000045125), lng : center.lng - (Math.sqrt(this.form.floor_size)*0.0000045125)})
+      // this.land_size = this.google.maps.geometry.spherical.computeArea(path)
     },
     setPlace(place) {
 			this.center.lat =  place.geometry.location.lat()
-			this.center.lng =  place.geometry.location.lng()
-		},
+      this.center.lng =  place.geometry.location.lng()
+      this.form.address = place.formatted_address
+    },
+    get_polygon_centroid(pts) {
+        var first = pts[0];
+        // if (first.lat != last.lat || first.lng != last.lng) pts.push(first);
+        var twicearea=0,
+        lat=0, lng=0,
+        nPts = pts.length,
+        p1, p2, f;
+        for ( var i=0, j=nPts-1 ; i<nPts ; j=i++ ) {
+            p1 = pts[i]; p2 = pts[j];
+            f = (p1.lng - first.lng) * (p2.lat - first.lat) - (p2.lng - first.lng) * (p1.lat - first.lat);
+            twicearea += f;
+            lat += (p1.lat + p2.lat - 2 * first.lat) * f;
+            lng += (p1.lng + p2.lng - 2 * first.lng) * f;
+        }
+        f = twicearea * 3;
+        return { lat:lat/f + first.lat, lng:lng/f + first.lng };
+    },
+    setLength(){
+        if(this.edited){
+          this.paths=this.paths[0]
+        }
+        var range = this.land_length - this.getDistance(this.paths[0],this.paths[1])
+        // this.paths[0].lat = this.paths[0].lat-(range*0.0000050)
+        this.paths[0].lng = this.paths[0].lng-(range*0.0000050)
+        // this.paths[1].lat = this.paths[1].lat-(range*0.0000050)
+        this.paths[1].lng = this.paths[1].lng+(range*0.0000050)
+        // this.paths[2].lat = this.paths[2].lat+(range*0.0000050)
+        this.paths[2].lng = this.paths[2].lng+(range*0.0000050)
+        // this.paths[3].lat = this.paths[3].lat+(range*0.0000050)
+        this.paths[3].lng = this.paths[3].lng-(range*0.0000050)
+        var temp = this.paths
+        this.paths = []
+        var x = this
+        setTimeout(function() {
+           x.paths = temp
+        }, 100);
+        this.edited = false
+    },
+    save(time) {
+      this.$refs.dialog.save(time)
+    }
   },
   mounted(){
       this.getHouseData()

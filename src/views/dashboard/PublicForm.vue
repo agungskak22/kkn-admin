@@ -75,7 +75,7 @@
                             <v-btn dark color="primary" height="40" width="140" @click="setMarker()" class="elevation-0">
                               Set Tanah
                             </v-btn>
-                            <v-btn :disabled="isValid" dark color="warning" height="40" width="140" @click="setConstruction();isConstructionAvail=true" class="elevation-0">
+                            <v-btn :disabled="isValid" color="warning" height="40" width="140" @click="setConstruction();isConstructionAvail=true" class="elevation-0">
                               Set Bangunan
                             </v-btn>
                             <v-spacer></v-spacer>

@@ -49,7 +49,7 @@
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.identity }}</td>
                     <td>{{ item.construction_year}}</td>
-                    <td>{{ item.construction_size}} m<sup>2</sup></td>
+                    <td>{{ item.floor_size}} m<sup>2</sup></td>
                     <td>{{ item.land_size}} m<sup>2</sup></td>
                     <td class="text-center">
                       <v-btn 
@@ -252,8 +252,8 @@ export default {
               value: 'construction_year'
             },
             {
-              text: 'Luas Bangunan',
-              value: 'construction_size'
+              text: 'Luas Lantai',
+              value: 'floor_size'
             },
             {
               text: 'Luas Tanah',

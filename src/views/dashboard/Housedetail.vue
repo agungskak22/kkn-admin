@@ -26,6 +26,8 @@
     }" :zoom="18" style="width: 100%;height:270px;margin-bottom:16px">
                                 <gmap-polygon :options="options" :paths="paths" :draggable="false" :editable="false" >
                                 </gmap-polygon>
+                                <gmap-polygon :options="optionsConstruction" style="z-index:100" :paths="constructionPaths" :draggable="false" :editable="false" @paths_changed="updateEditedConstruction($event)">
+                                </gmap-polygon>
                             </gmap-map>
                         </div>
                     </v-card>
@@ -263,7 +265,9 @@ export default {
         dialog: false,
         center: { lat:-7.779047, lng: 110.416957 },
         options : {strokeColor: '#3F5498',fillColor: '#3F5498',strokeWeight: 1},
+        optionsConstruction : {strokeColor: '#98963F',fillColor: '#98963F',strokeWeight: 1},
         paths: [],
+        constructionPaths: [],
         allPaths: [],
         rooms: [],
         mode: 'hexa',
@@ -381,6 +385,7 @@ export default {
         this.$http.get(this.$apiurl + '/house/'+this.$route.params.house,config).then(response =>{
             this.form = response.data.data
             this.paths = response.data.data.polygon.data
+            this.constructionPaths = response.data.data.polygon_building.data
             this.images = response.data.data.image.data
             this.rooms = response.data.data.room.data
             this.options.fillColor = response.data.data.fillColor
