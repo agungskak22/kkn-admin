@@ -69,8 +69,11 @@
                               </v-col>
                             </v-row>
                             <v-card-actions>
-                            <v-btn dark height="40" width="120" color="#E77271" @click="clearMarker()" class="elevation-0">
-                              Clear
+                            <v-btn dark height="40" width="160" color="#E77271" @click="clearMarker()" class="elevation-0">
+                              Clear Tanah
+                            </v-btn>
+                            <v-btn dark height="40" width="160" color="black" @click="clearMarkerConstruction()" class="elevation-0">
+                              Clear Bangunan
                             </v-btn>
                             <v-btn dark color="primary" height="40" width="140" @click="setMarker()" class="elevation-0">
                               Set Tanah
@@ -766,6 +769,11 @@ export default {
       }
       this.marker=true
       this.paths=[]
+      this.constructionPaths=[]
+    },
+    clearMarkerConstruction()
+    {
+      this.constructionPaths=[]
     },
     setMarker()
     {

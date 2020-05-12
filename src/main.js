@@ -15,12 +15,12 @@ Vue.use(VueGoogleMaps, {
 })
 
 Vue.prototype.$http = Axios
-// Vue.prototype.$apiurl = 'https://api-gis.ercasystem.com/api'
-Vue.prototype.$apiurl = 'http://127.0.0.1:8000/api';
-// Vue.prototype.$apiLogin = 'https://api-gis.ercasystem.com/oauth'
-Vue.prototype.$apiLogin = 'http://127.0.0.1:8000/oauth'
-// Vue.prototype.$imageUrl = 'https://api-gis.ercasystem.com';
-Vue.prototype.$imageUrl = 'http://127.0.0.1:8000';
+Vue.prototype.$apiurl = 'https://api-gis.ercasystem.com/api'
+// Vue.prototype.$apiurl = 'http://127.0.0.1:8000/api';
+Vue.prototype.$apiLogin = 'https://api-gis.ercasystem.com/oauth'
+// Vue.prototype.$apiLogin = 'http://127.0.0.1:8000/oauth'
+Vue.prototype.$imageUrl = 'https://api-gis.ercasystem.com';
+// Vue.prototype.$imageUrl = 'http://127.0.0.1:8000';
 Vue.config.productionTip = false
 
 new Vue({
